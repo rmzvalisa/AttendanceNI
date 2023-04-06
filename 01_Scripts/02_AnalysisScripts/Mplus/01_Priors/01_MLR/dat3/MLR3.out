@@ -1,0 +1,310 @@
+Mplus VERSION 8.4 (Mac)
+MUTHEN & MUTHEN
+02/08/2023   3:40 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: MLR dat3;
+
+  DATA:
+  FILE = mlsem_dat3.dat;
+
+  VARIABLE:
+  NAMES = country imprel confidence belong attend pray person year code RCCHR RCMUSLIM
+       RCASIAN RCOTHER COMMALL RRI RLI ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT
+       ZEUWEST;
+  USEVARIABLES = country imprel person confidence pray attend belong;
+  MISSING = .;
+
+  CLUSTER = country;
+  CATEGORICAL = imprel person confidence belong;
+
+  ANALYSIS:
+  ESTIMATOR = MLR;
+  TYPE = TWOLEVEL;
+  LINK = PROBIT;
+
+  MODEL:
+  %WITHIN%
+  Rel_W BY imprel person confidence pray attend belong;
+
+  %BETWEEN%
+  Rel_B BY imprel person confidence pray attend belong;
+  imprel@0;
+  person@0;
+  confidence@0;
+  pray@0;
+  attend@0;
+  belong@0;
+
+  OUTPUT:
+  SVALUES;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+MLR dat3;
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       60019
+
+Number of dependent variables                                    6
+Number of independent variables                                  0
+Number of continuous latent variables                            2
+
+Observed dependent variables
+
+  Continuous
+   PRAY        ATTEND
+
+  Binary and ordered categorical (ordinal)
+   IMPREL      PERSON      CONFIDEN    BELONG
+
+Continuous latent variables
+   REL_W       REL_B
+
+Variables with special functions
+
+  Cluster variable      COUNTRY
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Optimization Specifications for the Quasi-Newton Algorithm for
+Continuous Outcomes
+  Maximum number of iterations                                 100
+  Convergence criterion                                  0.100D-05
+Optimization Specifications for the EM Algorithm
+  Maximum number of iterations                                 500
+  Convergence criteria
+    Loglikelihood change                                 0.100D-02
+    Relative loglikelihood change                        0.100D-05
+    Derivative                                           0.100D-02
+Optimization Specifications for the M step of the EM Algorithm for
+Categorical Latent variables
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-02
+  Basis for M step termination                           ITERATION
+Optimization Specifications for the M step of the EM Algorithm for
+Censored, Binary or Ordered Categorical (Ordinal), Unordered
+Categorical (Nominal) and Count Outcomes
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-02
+  Basis for M step termination                           ITERATION
+  Maximum value for logit thresholds                            10
+  Minimum value for logit thresholds                           -10
+  Minimum expected cell size for chi-square              0.100D-01
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Optimization algorithm                                         EMA
+Integration Specifications
+  Type                                                    STANDARD
+  Number of integration points                                  15
+  Dimensions of numerical integration                            2
+  Adaptive quadrature                                           ON
+Link                                                        PROBIT
+Cholesky                                                        ON
+
+Input data file(s)
+  mlsem_dat3.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             1
+     Number of y missing data patterns           1
+     Number of u missing data patterns           1
+     Number of clusters                         42
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT FOR Y
+
+
+           Covariance Coverage
+              PRAY          ATTEND
+              ________      ________
+ PRAY           1.000
+ ATTEND         1.000         1.000
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    IMPREL
+      Category 1    0.184        11068.000
+      Category 2    0.226        13537.000
+      Category 3    0.241        14455.000
+      Category 4    0.349        20959.000
+    PERSON
+      Category 1    0.390        23396.000
+      Category 2    0.610        36623.000
+    CONFIDEN
+      Category 1    0.146         8771.000
+      Category 2    0.293        17611.000
+      Category 3    0.326        19549.000
+      Category 4    0.235        14088.000
+    BELONG
+      Category 1    0.297        17823.000
+      Category 2    0.703        42196.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     PRAY                  4.772      -0.266       1.000   23.71%       1.000      4.000      6.000
+           60019.000       7.552      -1.558       8.000   21.81%       6.000      8.000
+     ATTEND                3.501       0.181       1.000   28.67%       1.000      2.000      4.000
+           60019.000       4.502      -1.421       7.000    8.72%       4.000      6.000
+
+     THE MODEL ESTIMATION DID NOT TERMINATE NORMALLY DUE TO A NON-ZERO
+     DERIVATIVE OF THE OBSERVED-DATA LOGLIKELIHOOD.
+
+     THE MCONVERGENCE CRITERION OF THE EM ALGORITHM IS NOT FULFILLED.
+     CHECK YOUR STARTING VALUES OR INCREASE THE NUMBER OF MITERATIONS.
+     ESTIMATES CANNOT BE TRUSTED.  THE LOGLIKELIHOOD DERIVATIVE
+     FOR THE FOLLOWING PARAMETER IS  0.40353798D-02:
+     Parameter 12, %BETWEEN%: REL_B BY CONFIDENCE
+
+
+
+
+
+
+MODEL RESULTS
+
+                    Estimate
+
+Within Level
+
+ REL_W    BY
+    IMPREL             1.000
+    PERSON             1.035
+    CONFIDENCE         0.585
+    PRAY               1.446
+    ATTEND             1.148
+    BELONG             0.831
+
+ Variances
+    REL_W              1.408
+
+ Residual Variances
+    PRAY               2.489
+    ATTEND             1.776
+
+Between Level
+
+ REL_B    BY
+    IMPREL             1.000
+    PERSON             0.636
+    CONFIDENCE         0.409
+    PRAY               1.335
+    ATTEND             0.862
+    BELONG             0.605
+
+ Intercepts
+    PRAY               4.331
+    ATTEND             3.218
+
+ Thresholds
+    IMPREL$1          -1.471
+    IMPREL$2          -0.086
+    IMPREL$3           1.153
+    PERSON$1          -0.261
+    CONFIDEN$1        -1.241
+    CONFIDEN$2        -0.066
+    CONFIDEN$3         1.089
+    BELONG$1          -0.641
+
+ Variances
+    REL_B              1.443
+
+ Residual Variances
+    IMPREL             0.000
+    PERSON             0.000
+    CONFIDENCE         0.000
+    BELONG             0.000
+    PRAY               0.000
+    ATTEND             0.000
+
+
+MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES
+
+     %WITHIN%
+
+     rel_w BY imprel@1;
+     rel_w BY person*1.03500;
+     rel_w BY confidence*0.58497;
+     rel_w BY pray*1.44637;
+     rel_w BY attend*1.14829;
+     rel_w BY belong*0.83098;
+
+     pray*2.48921;
+     attend*1.77622;
+     rel_w*1.40794;
+
+     %BETWEEN%
+
+     rel_b BY imprel@1;
+     rel_b BY person*0.63580;
+     rel_b BY confidence*0.40938;
+     rel_b BY pray*1.33513;
+     rel_b BY attend*0.86246;
+     rel_b BY belong*0.60515;
+
+     [ pray*4.33072 ];
+     [ attend*3.21758 ];
+
+     [ imprel$1*-1.47132 ];
+     [ imprel$2*-0.08633 ];
+     [ imprel$3*1.15319 ];
+     [ person$1*-0.26103 ];
+     [ confidence$1*-1.24086 ];
+     [ confidence$2*-0.06611 ];
+     [ confidence$3*1.08918 ];
+     [ belong$1*-0.64088 ];
+
+     imprel@0;
+     person@0;
+     confidence@0;
+     belong@0;
+     pray@0;
+     attend@0;
+     rel_b*1.44251;
+
+
+
+     Beginning Time:  15:40:05
+        Ending Time:  16:23:05
+       Elapsed Time:  00:43:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2019 Muthen & Muthen

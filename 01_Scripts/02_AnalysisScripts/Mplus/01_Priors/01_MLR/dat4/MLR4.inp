@@ -1,0 +1,35 @@
+TITLE: MLR dat4;
+
+DATA: 
+FILE = mlsem_dat4.dat;
+
+VARIABLE: 
+NAMES = country imprel confidence belong attend pray person year code RCCHR RCMUSLIM
+     RCASIAN RCOTHER COMMALL RRI RLI ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT
+     ZEUWEST; 
+USEVARIABLES = country imprel person confidence pray attend belong;
+MISSING = .;
+
+CLUSTER = country;
+CATEGORICAL = imprel person confidence belong;
+
+ANALYSIS: 
+ESTIMATOR = MLR;
+TYPE = TWOLEVEL; 
+LINK = PROBIT;
+
+MODEL: 
+%WITHIN%
+Rel_W BY imprel person confidence pray attend belong;
+
+%BETWEEN%
+Rel_B BY imprel person confidence pray attend belong;
+imprel@0;
+person@0;
+confidence@0;
+pray@0;
+attend@0;
+belong@0;
+
+OUTPUT: 
+SVALUES;

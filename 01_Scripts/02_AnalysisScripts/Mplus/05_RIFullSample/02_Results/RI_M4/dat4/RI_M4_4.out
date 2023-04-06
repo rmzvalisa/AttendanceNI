@@ -1,0 +1,1035 @@
+Mplus VERSION 8.4 (Mac)
+MUTHEN & MUTHEN
+03/23/2023   7:27 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: M4 dat4;
+
+  DATA:
+  FILE = mlsem_dat_add4.dat;
+
+  VARIABLE:
+  NAMES = country imprel confidence belong attend pray person year code RCCHR RCMUSLIM
+       RCASIAN RCOTHER COMMALL RRI RLI ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT
+       ZEUWEST;
+  USEVARIABLES = country imprel person confidence pray attend belong
+       RCASIAN RCOTHER COMMALL;
+  MISSING = .;
+
+  BETWEEN = RCASIAN RCOTHER COMMALL;
+  CLUSTER = country;
+  CATEGORICAL = imprel confidence belong person;
+
+  ANALYSIS:
+  ESTIMATOR = BAYES;
+  PROCESSORS = 2;
+  TYPE = TWOLEVEL;
+  THIN = 20;
+  FBITERATIONS = 10000;
+
+  MODEL:
+  %WITHIN%
+  Rel_W BY imprel person confidence pray attend belong;
+  Res1_W BY pray@1 attend@1;
+  Res2_W BY person@1 belong@1;
+  Res1_W WITH Rel_W@0;
+  Res2_W WITH Rel_W@0;
+  Res1_W WITH Res2_W@0;
+
+  %BETWEEN%
+  Rel_B BY imprel person confidence pray attend belong;
+  Res1_B BY pray@1 attend@1;
+  Res2_B BY person@1 belong@1;
+  Res1_B WITH Rel_B@0;
+  Res2_B WITH Rel_B@0;
+  Res1_B WITH Res2_B@0;
+
+  attend ON RCASIAN RCOTHER COMMALL;
+
+  [imprel$1] (t1);
+  [imprel$2] (t2);
+  [imprel$3] (t3);
+  [confidence$1] (t4);
+  [confidence$2] (t5);
+  [confidence$3] (t6);
+
+  MODEL PRIORS:
+  t1 ~ N(-1.475, 0.001);
+  t2 ~ N(-0.096, 0.001);
+  t3 ~ N(1.122, 0.001);
+  t4 ~ N(-1.258, 0.001);
+  t5 ~ N(-0.087, 0.001);
+  t6 ~ N(1.077, 0.001);
+
+  OUTPUT:
+  TECH8;
+
+  PLOT:
+  TYPE = PLOT2;
+
+  SAVEDATA:
+  BPARAMETERS = parameters.dat;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING in PLOT command
+  Note that only the first 8 characters of variable names are used in plots.
+  If variable names are not unique within the first 8 characters, problems
+  may occur.
+   2 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+M4 dat4;
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       63221
+
+Number of dependent variables                                    6
+Number of independent variables                                  3
+Number of continuous latent variables                            6
+
+Observed dependent variables
+
+  Continuous
+   PRAY        ATTEND
+
+  Binary and ordered categorical (ordinal)
+   IMPREL      PERSON      CONFIDEN    BELONG
+
+Observed independent variables
+   RCASIAN     RCOTHER     COMMALL
+
+Continuous latent variables
+   REL_W       RES1_W      RES2_W      REL_B       RES1_B      RES2_B
+
+Variables with special functions
+
+  Cluster variable      COUNTRY
+
+  Between variables
+   RCASIAN     RCOTHER     COMMALL
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Fixed number of iterations                                 10000
+  K-th iteration used for thinning                              20
+Link                                                        PROBIT
+
+Input data file(s)
+  mlsem_dat_add4.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                         44
+
+       Size (s)    Cluster ID with Size s
+
+        250        14
+        447        30
+        999        38
+       1000        10 40
+       1003        2
+       1004        1
+       1046        33
+       1057        28
+       1069        36
+       1127        44
+       1189        37
+       1190        41
+       1200        23 12 29 11 18 42 35
+       1203        19
+       1222        15
+       1223        3
+       1257        31
+       1266        22
+       1276        21
+       1313        24
+       1499        20
+       1520        9
+       1533        13
+       1535        5
+       1552        16
+       1638        26
+       1739        25
+       1762        7
+       1810        32
+       1813        4
+       1902        27
+       2012        34
+       2067        6
+       2075        43
+       2596        39
+       2609        17
+       4018        8
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             1
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         1.000         1.000
+ CONFIDEN       1.000         1.000         1.000
+ BELONG         1.000         1.000         1.000         1.000
+ PRAY           1.000         1.000         1.000         1.000         1.000
+ ATTEND         1.000         1.000         1.000         1.000         1.000
+ RCASIAN        1.000         1.000         1.000         1.000         1.000
+ RCOTHER        1.000         1.000         1.000         1.000         1.000
+ COMMALL        1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              ATTEND        RCASIAN       RCOTHER       COMMALL
+              ________      ________      ________      ________
+ ATTEND         1.000
+ RCASIAN        1.000         1.000
+ RCOTHER        1.000         1.000         1.000
+ COMMALL        1.000         1.000         1.000         1.000
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    IMPREL
+      Category 1    0.184        11648.000
+      Category 2    0.230        14548.000
+      Category 3    0.239        15103.000
+      Category 4    0.347        21922.000
+    PERSON
+      Category 1    0.403        25459.000
+      Category 2    0.597        37762.000
+    CONFIDEN
+      Category 1    0.144         9084.000
+      Category 2    0.294        18588.000
+      Category 3    0.329        20813.000
+      Category 4    0.233        14736.000
+    BELONG
+      Category 1    0.309        19528.000
+      Category 2    0.691        43693.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     PRAY                  4.743      -0.244       1.000   24.17%       1.000      4.000      6.000
+           63221.000       7.636      -1.579       8.000   21.96%       6.000      8.000
+     ATTEND                3.479       0.202       1.000   29.17%       1.000      2.000      4.000
+           63221.000       4.534      -1.423       7.000    8.82%       4.000      6.000
+     RCASIAN               5.642       2.919       0.000    4.55%       0.028      0.090      0.147
+              44.000     209.475       7.385      63.286    2.27%       0.203      1.872
+     RCOTHER              22.847       1.432       0.878    2.27%       5.320     10.138     15.725
+              44.000     458.228       1.884      94.074    2.27%      22.286     34.284
+     COMMALL               0.318       0.781       0.000   68.18%       0.000      0.000      0.000
+              44.000       0.217      -1.390       1.000   31.82%       0.000      1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              37
+
+Bayesian Posterior Predictive Checking using Chi-Square
+
+          95% Confidence Interval for the Difference Between
+          the Observed and the Replicated Chi-Square Values
+
+                                615.169           756.429
+
+          Posterior Predictive P-Value              0.000
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ REL_W    BY
+    IMPREL             1.000       0.000      0.000       1.000       1.000
+    PERSON             1.207       0.017      0.000       1.174       1.241      *
+    CONFIDENCE         0.602       0.007      0.000       0.589       0.616      *
+    PRAY               1.259       0.013      0.000       1.233       1.284      *
+    ATTEND             0.978       0.010      0.000       0.957       0.998      *
+    BELONG             1.030       0.015      0.000       1.001       1.060      *
+
+ RES1_W   BY
+    PRAY               1.000       0.000      0.000       1.000       1.000
+    ATTEND             1.000       0.000      0.000       1.000       1.000
+
+ RES2_W   BY
+    PERSON             1.000       0.000      0.000       1.000       1.000
+    BELONG             1.000       0.000      0.000       1.000       1.000
+
+ RES1_W   WITH
+    REL_W              0.000       0.000      1.000       0.000       0.000
+    RES2_W             0.000       0.000      1.000       0.000       0.000
+
+ RES2_W   WITH
+    REL_W              0.000       0.000      1.000       0.000       0.000
+
+ Variances
+    REL_W              1.605       0.028      0.000       1.550       1.661      *
+    RES1_W             0.592       0.014      0.000       0.565       0.620      *
+    RES2_W             0.259       0.020      0.000       0.221       0.300      *
+
+ Residual Variances
+    PRAY               2.145       0.017      0.000       2.111       2.178      *
+    ATTEND             1.373       0.013      0.000       1.347       1.399      *
+
+Between Level
+
+ REL_B    BY
+    IMPREL             1.000       0.000      0.000       1.000       1.000
+    PERSON             0.753       0.088      0.000       0.579       0.924      *
+    CONFIDENCE         0.438       0.044      0.000       0.352       0.527      *
+    PRAY               1.286       0.063      0.000       1.165       1.412      *
+    ATTEND             0.777       0.089      0.000       0.606       0.954      *
+    BELONG             0.832       0.127      0.000       0.586       1.082      *
+
+ RES1_B   BY
+    PRAY               1.000       0.000      0.000       1.000       1.000
+    ATTEND             1.000       0.000      0.000       1.000       1.000
+
+ RES2_B   BY
+    PERSON             1.000       0.000      0.000       1.000       1.000
+    BELONG             1.000       0.000      0.000       1.000       1.000
+
+ ATTEND     ON
+    RCASIAN            0.000       0.005      0.476      -0.009       0.010
+    RCOTHER            0.000       0.005      0.468      -0.010       0.009
+    COMMALL            0.017       0.175      0.461      -0.319       0.369
+
+ RES1_B   WITH
+    REL_B              0.000       0.000      1.000       0.000       0.000
+    RES2_B             0.000       0.000      1.000       0.000       0.000
+
+ RES2_B   WITH
+    REL_B              0.000       0.000      1.000       0.000       0.000
+
+ Intercepts
+    PRAY               4.311       0.078      0.000       4.158       4.462      *
+    ATTEND             3.230       0.161      0.000       2.906       3.539      *
+
+ Thresholds
+    IMPREL$1          -1.546       0.020      0.000      -1.585      -1.507      *
+    IMPREL$2          -0.100       0.018      0.000      -0.135      -0.063      *
+    IMPREL$3           1.186       0.020      0.000       1.149       1.225      *
+    PERSON$1          -0.304       0.108      0.003      -0.512      -0.091      *
+    CONFIDEN$1        -1.352       0.018      0.000      -1.388      -1.316      *
+    CONFIDEN$2        -0.081       0.018      0.000      -0.116      -0.047      *
+    CONFIDEN$3         1.169       0.018      0.000       1.133       1.205      *
+    BELONG$1          -0.904       0.153      0.000      -1.203      -0.607      *
+
+ Variances
+    REL_B              1.627       0.389      0.000       1.086       2.606      *
+    RES1_B             0.055       0.042      0.000       0.003       0.160      *
+    RES2_B             0.275       0.114      0.000       0.093       0.545      *
+
+ Residual Variances
+    IMPREL             0.014       0.016      0.000       0.000       0.061      *
+    PERSON             0.153       0.097      0.000       0.016       0.387      *
+    CONFIDENCE         0.116       0.029      0.000       0.076       0.191      *
+    BELONG             0.626       0.183      0.000       0.362       1.080      *
+    PRAY               0.124       0.052      0.000       0.043       0.247      *
+    ATTEND             0.168       0.055      0.000       0.088       0.303      *
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                    0             0             0
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              ATTEND
+              ________
+                    0
+
+
+           LAMBDA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ IMPREL             0             0             0             0
+ PERSON             1             0             0             0
+ CONFIDEN           2             0             0             0
+ BELONG             3             0             0             0
+ PRAY               4             0             0             0
+ ATTEND             0             0             0             0
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL             0
+ PERSON             0             0
+ CONFIDEN           0             0             0
+ BELONG             0             0             0             0
+ PRAY               0             0             0             0             5
+ ATTEND             0             0             0             0             0
+
+
+           THETA
+              ATTEND
+              ________
+ ATTEND             0
+
+
+           ALPHA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+                    0             0             0             0
+
+
+           BETA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W              0             0             0             0
+ RES1_W             0             0             0             0
+ RES2_W             0             0             0             0
+ ATTEND             6             0             0             0
+
+
+           PSI
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W              7
+ RES1_W             0             8
+ RES2_W             0             0             9
+ ATTEND             0             0             0            10
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                   30            31            32            33            34
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                   35            36            37
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                    0             0             0             0            11
+
+
+           NU
+              ATTEND        RCASIAN       RCOTHER       COMMALL
+              ________      ________      ________      ________
+                    0             0             0             0
+
+
+           LAMBDA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ IMPREL             0             0             0             0             0
+ PERSON            12             0             0             0             0
+ CONFIDEN          13             0             0             0             0
+ BELONG            14             0             0             0             0
+ PRAY              15             0             0             0             0
+ ATTEND             0             0             0             0             0
+ RCASIAN            0             0             0             0             0
+ RCOTHER            0             0             0             0             0
+ COMMALL            0             0             0             0             0
+
+
+           LAMBDA
+              RCOTHER       COMMALL
+              ________      ________
+ IMPREL             0             0
+ PERSON             0             0
+ CONFIDEN           0             0
+ BELONG             0             0
+ PRAY               0             0
+ ATTEND             0             0
+ RCASIAN            0             0
+ RCOTHER            0             0
+ COMMALL            0             0
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL            16
+ PERSON             0            17
+ CONFIDEN           0             0            18
+ BELONG             0             0             0            19
+ PRAY               0             0             0             0            20
+ ATTEND             0             0             0             0             0
+ RCASIAN            0             0             0             0             0
+ RCOTHER            0             0             0             0             0
+ COMMALL            0             0             0             0             0
+
+
+           THETA
+              ATTEND        RCASIAN       RCOTHER       COMMALL
+              ________      ________      ________      ________
+ ATTEND             0
+ RCASIAN            0             0
+ RCOTHER            0             0             0
+ COMMALL            0             0             0             0
+
+
+           ALPHA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+                    0             0             0            21             0
+
+
+           ALPHA
+              RCOTHER       COMMALL
+              ________      ________
+                    0             0
+
+
+           BETA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ REL_B              0             0             0             0             0
+ RES1_B             0             0             0             0             0
+ RES2_B             0             0             0             0             0
+ ATTEND            22             0             0             0            23
+ RCASIAN            0             0             0             0             0
+ RCOTHER            0             0             0             0             0
+ COMMALL            0             0             0             0             0
+
+
+           BETA
+              RCOTHER       COMMALL
+              ________      ________
+ REL_B              0             0
+ RES1_B             0             0
+ RES2_B             0             0
+ ATTEND            24            25
+ RCASIAN            0             0
+ RCOTHER            0             0
+ COMMALL            0             0
+
+
+           PSI
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ REL_B             26
+ RES1_B             0            27
+ RES2_B             0             0            28
+ ATTEND             0             0             0            29
+ RCASIAN            0             0             0             0             0
+ RCOTHER            0             0             0             0             0
+ COMMALL            0             0             0             0             0
+
+
+           PSI
+              RCOTHER       COMMALL
+              ________      ________
+ RCOTHER            0
+ COMMALL            0             0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              ATTEND
+              ________
+                0.000
+
+
+           LAMBDA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ IMPREL         1.000         0.000         0.000         0.000
+ PERSON         1.000         0.000         1.000         0.000
+ CONFIDEN       1.000         0.000         0.000         0.000
+ BELONG         1.000         0.000         1.000         0.000
+ PRAY           1.000         1.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         1.000
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         0.000         1.000
+ CONFIDEN       0.000         0.000         1.000
+ BELONG         0.000         0.000         0.000         1.000
+ PRAY           0.000         0.000         0.000         0.000         3.818
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ATTEND
+              ________
+ ATTEND         0.000
+
+
+           ALPHA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           BETA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W          0.000         0.000         0.000         0.000
+ RES1_W         0.000         0.000         0.000         0.000
+ RES2_W         0.000         0.000         0.000         0.000
+ ATTEND         1.000         1.000         0.000         0.000
+
+
+           PSI
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W          1.000
+ RES1_W         0.000         1.000
+ RES2_W         0.000         0.000         1.000
+ ATTEND         0.000         0.000         0.000         2.267
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+               -0.827        -0.192         0.352        -0.219        -0.992
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+               -0.139         0.662        -0.447
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         4.743
+
+
+           NU
+              ATTEND        RCASIAN       RCOTHER       COMMALL
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ IMPREL         1.000         0.000         0.000         0.000         0.000
+ PERSON         1.000         0.000         1.000         0.000         0.000
+ CONFIDEN       1.000         0.000         0.000         0.000         0.000
+ BELONG         1.000         0.000         1.000         0.000         0.000
+ PRAY           1.000         1.000         0.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         1.000         0.000
+ RCASIAN        0.000         0.000         0.000         0.000         1.000
+ RCOTHER        0.000         0.000         0.000         0.000         0.000
+ COMMALL        0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              RCOTHER       COMMALL
+              ________      ________
+ IMPREL         0.000         0.000
+ PERSON         0.000         0.000
+ CONFIDEN       0.000         0.000
+ BELONG         0.000         0.000
+ PRAY           0.000         0.000
+ ATTEND         0.000         0.000
+ RCASIAN        0.000         0.000
+ RCOTHER        1.000         0.000
+ COMMALL        0.000         1.000
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         0.000         1.000
+ CONFIDEN       0.000         0.000         1.000
+ BELONG         0.000         0.000         0.000         1.000
+ PRAY           0.000         0.000         0.000         0.000         3.818
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+ RCASIAN        0.000         0.000         0.000         0.000         0.000
+ RCOTHER        0.000         0.000         0.000         0.000         0.000
+ COMMALL        0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ATTEND        RCASIAN       RCOTHER       COMMALL
+              ________      ________      ________      ________
+ ATTEND         0.000
+ RCASIAN        0.000         0.000
+ RCOTHER        0.000         0.000         0.000
+ COMMALL        0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         3.479         0.000
+
+
+           ALPHA
+              RCOTHER       COMMALL
+              ________      ________
+                0.000         0.000
+
+
+           BETA
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ REL_B          0.000         0.000         0.000         0.000         0.000
+ RES1_B         0.000         0.000         0.000         0.000         0.000
+ RES2_B         0.000         0.000         0.000         0.000         0.000
+ ATTEND         1.000         1.000         0.000         0.000         0.000
+ RCASIAN        0.000         0.000         0.000         0.000         0.000
+ RCOTHER        0.000         0.000         0.000         0.000         0.000
+ COMMALL        0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              RCOTHER       COMMALL
+              ________      ________
+ REL_B          0.000         0.000
+ RES1_B         0.000         0.000
+ RES2_B         0.000         0.000
+ ATTEND         0.000         0.000
+ RCASIAN        0.000         0.000
+ RCOTHER        0.000         0.000
+ COMMALL        0.000         0.000
+
+
+           PSI
+              REL_B         RES1_B        RES2_B        ATTEND        RCASIAN
+              ________      ________      ________      ________      ________
+ REL_B          1.000
+ RES1_B         0.000         1.000
+ RES2_B         0.000         0.000         1.000
+ ATTEND         0.000         0.000         0.000         2.267
+ RCASIAN        0.000         0.000         0.000         0.000       129.983
+ RCOTHER        0.000         0.000         0.000         0.000         0.000
+ COMMALL        0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              RCOTHER       COMMALL
+              ________      ________
+ RCOTHER      212.155
+ COMMALL        0.000         0.100
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 2~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 3~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 8~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 9~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 10~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 13~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 14~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 15~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 16~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 17~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 18~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 19~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 20~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 21~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 22~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 23~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 24~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 25~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 26~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 27~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 28~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 29~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 30~N(-1.475,0.001)           -1.4750              0.0010              0.0316
+     Parameter 31~N(-0.096,0.001)           -0.0960              0.0010              0.0316
+     Parameter 32~N(1.122,0.001)             1.1220              0.0010              0.0316
+     Parameter 33~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 34~N(-1.258,0.001)           -1.2580              0.0010              0.0316
+     Parameter 35~N(-0.087,0.001)           -0.0870              0.0010              0.0316
+     Parameter 36~N(1.077,0.001)             1.0770              0.0010              0.0316
+     Parameter 37~N(0.000,5.000)             0.0000              5.0000              2.2361
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              1.855               34
+     200              1.226               1
+     300              1.338               35
+     400              1.228               36
+     500              1.124               9
+     600              1.118               9
+     700              1.019               35
+     800              1.032               9
+     900              1.016               35
+     1000             1.013               35
+     1100             1.016               9
+     1200             1.036               9
+     1300             1.108               9
+     1400             1.066               9
+     1500             1.057               9
+     1600             1.052               9
+     1700             1.055               9
+     1800             1.061               9
+     1900             1.067               9
+     2000             1.054               9
+     2100             1.049               9
+     2200             1.027               9
+     2300             1.023               9
+     2400             1.024               9
+     2500             1.020               9
+     2600             1.015               30
+     2700             1.017               30
+     2800             1.014               30
+     2900             1.010               30
+     3000             1.009               30
+     3100             1.006               1
+     3200             1.006               1
+     3300             1.004               7
+     3400             1.005               34
+     3500             1.004               34
+     3600             1.006               34
+     3700             1.009               34
+     3800             1.005               34
+     3900             1.005               34
+     4000             1.003               34
+     4100             1.004               34
+     4200             1.004               7
+     4300             1.003               34
+     4400             1.005               34
+     4500             1.003               34
+     4600             1.004               34
+     4700             1.002               4
+     4800             1.003               9
+     4900             1.005               9
+     5000             1.005               9
+     5100             1.006               9
+     5200             1.004               32
+     5300             1.004               34
+     5400             1.004               9
+     5500             1.007               34
+     5600             1.006               34
+     5700             1.006               34
+     5800             1.005               34
+     5900             1.007               34
+     6000             1.010               35
+     6100             1.007               35
+     6200             1.007               35
+     6300             1.008               35
+     6400             1.012               35
+     6500             1.009               35
+     6600             1.006               35
+     6700             1.005               35
+     6800             1.005               35
+     6900             1.005               35
+     7000             1.005               35
+     7100             1.004               35
+     7200             1.004               35
+     7300             1.003               35
+     7400             1.002               35
+     7500             1.003               35
+     7600             1.003               35
+     7700             1.003               35
+     7800             1.003               35
+     7900             1.004               35
+     8000             1.005               35
+     8100             1.005               35
+     8200             1.004               35
+     8300             1.003               9
+     8400             1.004               9
+     8500             1.003               9
+     8600             1.003               9
+     8700             1.003               35
+     8800             1.003               9
+     8900             1.003               9
+     9000             1.003               9
+     9100             1.003               9
+     9200             1.002               35
+     9300             1.003               35
+     9400             1.005               35
+     9500             1.006               35
+     9600             1.007               35
+     9700             1.006               35
+     9800             1.005               35
+     9900             1.003               36
+     10000            1.003               35
+
+
+PLOT INFORMATION
+
+The following plots are available:
+
+  Sample proportions and estimated probabilities
+  Bayesian posterior parameter distributions
+  Bayesian posterior parameter trace plots
+  Bayesian autocorrelation plots
+  Bayesian prior parameter distributions
+  Bayesian posterior predictive checking scatterplots
+  Bayesian posterior predictive checking distribution plots
+
+SAVEDATA INFORMATION
+
+
+  Bayesian Parameters
+
+  Save file
+    parameters.dat
+  Save format      Free
+
+  Order of parameters saved
+
+    Chain number
+    Iteration number
+    Parameter 1, %WITHIN%: REL_W BY PERSON
+    Parameter 2, %WITHIN%: REL_W BY CONFIDENCE
+    Parameter 3, %WITHIN%: REL_W BY BELONG
+    Parameter 4, %WITHIN%: REL_W BY PRAY
+    Parameter 5, %WITHIN%: PRAY
+    Parameter 6, %WITHIN%: ATTEND ON REL_W
+    Parameter 7, %WITHIN%: REL_W
+    Parameter 8, %WITHIN%: RES1_W
+    Parameter 9, %WITHIN%: RES2_W
+    Parameter 10, %WITHIN%: ATTEND
+    Parameter 11, %BETWEEN%: [ PRAY ]
+    Parameter 12, %BETWEEN%: REL_B BY PERSON
+    Parameter 13, %BETWEEN%: REL_B BY CONFIDENCE
+    Parameter 14, %BETWEEN%: REL_B BY BELONG
+    Parameter 15, %BETWEEN%: REL_B BY PRAY
+    Parameter 16, %BETWEEN%: IMPREL
+    Parameter 17, %BETWEEN%: PERSON
+    Parameter 18, %BETWEEN%: CONFIDENCE
+    Parameter 19, %BETWEEN%: BELONG
+    Parameter 20, %BETWEEN%: PRAY
+    Parameter 21, %BETWEEN%: [ ATTEND ]
+    Parameter 22, %BETWEEN%: ATTEND ON REL_B
+    Parameter 23, %BETWEEN%: ATTEND ON RCASIAN
+    Parameter 24, %BETWEEN%: ATTEND ON RCOTHER
+    Parameter 25, %BETWEEN%: ATTEND ON COMMALL
+    Parameter 26, %BETWEEN%: REL_B
+    Parameter 27, %BETWEEN%: RES1_B
+    Parameter 28, %BETWEEN%: RES2_B
+    Parameter 29, %BETWEEN%: ATTEND
+    Parameter 30, %BETWEEN%: [ IMPREL$1 ] (equality/label)
+    Parameter 31, %BETWEEN%: [ IMPREL$2 ] (equality/label)
+    Parameter 32, %BETWEEN%: [ IMPREL$3 ] (equality/label)
+    Parameter 33, %BETWEEN%: [ PERSON$1 ]
+    Parameter 34, %BETWEEN%: [ CONFIDENCE$1 ] (equality/label)
+    Parameter 35, %BETWEEN%: [ CONFIDENCE$2 ] (equality/label)
+    Parameter 36, %BETWEEN%: [ CONFIDENCE$3 ] (equality/label)
+    Parameter 37, %BETWEEN%: [ BELONG$1 ]
+
+     Beginning Time:  07:27:16
+        Ending Time:  12:50:09
+       Elapsed Time:  05:22:53
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2019 Muthen & Muthen

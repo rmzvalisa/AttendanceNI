@@ -1,0 +1,1240 @@
+Mplus VERSION 8.4 (Mac)
+MUTHEN & MUTHEN
+03/29/2023  10:54 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE: M6 dat4;
+
+  DATA:
+  FILE = mlsem_dat4.dat;
+
+  VARIABLE:
+  NAMES = country imprel confidence belong attend pray person year code RCCHR RCMUSLIM
+       RCASIAN RCOTHER COMMALL RRI RLI ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT
+       ZEUWEST;
+  USEVARIABLES = country imprel person confidence pray attend belong
+       ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+  MISSING = .;
+
+  BETWEEN = ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+  CLUSTER = country;
+  CATEGORICAL = imprel confidence belong person;
+
+  ANALYSIS:
+  ESTIMATOR = BAYES;
+  PROCESSORS = 2;
+  TYPE = TWOLEVEL;
+  THIN = 20;
+  FBITERATIONS = 10000;
+
+  MODEL:
+  %WITHIN%
+  Rel_W BY imprel person confidence pray attend belong;
+  Res1_W BY pray@1 attend@1;
+  Res2_W BY person@1 belong@1;
+  Res1_W WITH Rel_W@0;
+  Res2_W WITH Rel_W@0;
+  Res1_W WITH Res2_W@0;
+
+  %BETWEEN%
+  Rel_B BY imprel person confidence pray attend belong;
+  Res1_B BY pray@1 attend@1;
+  Res2_B BY person@1 belong@1;
+  Res1_B WITH Rel_B@0;
+  Res2_B WITH Rel_B@0;
+  Res1_B WITH Res2_B@0;
+
+  attend ON ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+
+  OUTPUT:
+  TECH8;
+
+  PLOT:
+  TYPE = PLOT2;
+
+  SAVEDATA:
+  BPARAMETERS = parameters.dat;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+*** WARNING in PLOT command
+  Note that only the first 8 characters of variable names are used in plots.
+  If variable names are not unique within the first 8 characters, problems
+  may occur.
+   2 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+M6 dat4;
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                       60019
+
+Number of dependent variables                                    6
+Number of independent variables                                  7
+Number of continuous latent variables                            6
+
+Observed dependent variables
+
+  Continuous
+   PRAY        ATTEND
+
+  Binary and ordered categorical (ordinal)
+   IMPREL      PERSON      CONFIDEN    BELONG
+
+Observed independent variables
+   ZAFRICA     ZLA         ZINDIC      ZSINIC      ZNWEST      ZISLAM
+   ZORT
+
+Continuous latent variables
+   REL_W       RES1_W      RES2_W      REL_B       RES1_B      RES2_B
+
+Variables with special functions
+
+  Cluster variable      COUNTRY
+
+  Between variables
+   ZAFRICA     ZLA         ZINDIC      ZSINIC      ZNWEST      ZISLAM
+   ZORT
+
+
+Estimator                                                    BAYES
+Specifications for Bayesian Estimation
+  Point estimate                                            MEDIAN
+  Number of Markov chain Monte Carlo (MCMC) chains               2
+  Random seed for the first chain                                0
+  Starting value information                           UNPERTURBED
+  Algorithm used for Markov chain Monte Carlo           GIBBS(PX1)
+  Fixed number of iterations                                 10000
+  K-th iteration used for thinning                              20
+Link                                                        PROBIT
+
+Input data file(s)
+  mlsem_dat4.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                         42
+
+       Size (s)    Cluster ID with Size s
+
+        250        14
+        447        30
+        999        38
+       1000        10 40
+       1003        2
+       1004        1
+       1046        33
+       1057        28
+       1069        36
+       1189        37
+       1190        41
+       1200        35 23 12 29 11 18 42
+       1203        19
+       1222        15
+       1223        3
+       1257        31
+       1266        22
+       1276        21
+       1313        24
+       1499        20
+       1520        9
+       1533        13
+       1535        5
+       1552        16
+       1638        26
+       1739        25
+       1762        7
+       1810        32
+       1813        4
+       1902        27
+       2012        34
+       2067        6
+       2596        39
+       2609        17
+       4018        8
+
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+     Number of missing data patterns             1
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         1.000         1.000
+ CONFIDEN       1.000         1.000         1.000
+ BELONG         1.000         1.000         1.000         1.000
+ PRAY           1.000         1.000         1.000         1.000         1.000
+ ATTEND         1.000         1.000         1.000         1.000         1.000
+ ZAFRICA        1.000         1.000         1.000         1.000         1.000
+ ZLA            1.000         1.000         1.000         1.000         1.000
+ ZINDIC         1.000         1.000         1.000         1.000         1.000
+ ZSINIC         1.000         1.000         1.000         1.000         1.000
+ ZNWEST         1.000         1.000         1.000         1.000         1.000
+ ZISLAM         1.000         1.000         1.000         1.000         1.000
+ ZORT           1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              ATTEND        ZAFRICA       ZLA           ZINDIC        ZSINIC
+              ________      ________      ________      ________      ________
+ ATTEND         1.000
+ ZAFRICA        1.000         1.000
+ ZLA            1.000         1.000         1.000
+ ZINDIC         1.000         1.000         1.000         1.000
+ ZSINIC         1.000         1.000         1.000         1.000         1.000
+ ZNWEST         1.000         1.000         1.000         1.000         1.000
+ ZISLAM         1.000         1.000         1.000         1.000         1.000
+ ZORT           1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              ZNWEST        ZISLAM        ZORT
+              ________      ________      ________
+ ZNWEST         1.000
+ ZISLAM         1.000         1.000
+ ZORT           1.000         1.000         1.000
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    IMPREL
+      Category 1    0.184        11070.000
+      Category 2    0.226        13546.000
+      Category 3    0.241        14438.000
+      Category 4    0.349        20965.000
+    PERSON
+      Category 1    0.390        23391.000
+      Category 2    0.610        36628.000
+    CONFIDEN
+      Category 1    0.146         8773.000
+      Category 2    0.293        17607.000
+      Category 3    0.325        19523.000
+      Category 4    0.235        14116.000
+    BELONG
+      Category 1    0.297        17838.000
+      Category 2    0.703        42181.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     PRAY                  4.774      -0.267       1.000   23.65%       1.000      4.000      6.000
+           60019.000       7.544      -1.556       8.000   21.79%       6.000      8.000
+     ATTEND                3.501       0.181       1.000   28.68%       1.000      2.000      4.000
+           60019.000       4.502      -1.421       7.000    8.72%       4.000      6.000
+     ZAFRICA               0.024       6.247       0.000   97.62%       0.000      0.000      0.000
+              42.000       0.023      37.024       1.000    2.38%       0.000      0.000
+     ZLA                   0.286       0.949       0.000   71.43%       0.000      0.000      0.000
+              42.000       0.204      -1.100       1.000   28.57%       0.000      1.000
+     ZINDIC                0.048       4.249       0.000   95.24%       0.000      0.000      0.000
+              42.000       0.045      16.050       1.000    4.76%       0.000      0.000
+     ZSINIC                0.048       4.249       0.000   95.24%       0.000      0.000      0.000
+              42.000       0.045      16.050       1.000    4.76%       0.000      0.000
+     ZNWEST                0.095       2.758       0.000   90.48%       0.000      0.000      0.000
+              42.000       0.086       5.605       1.000    9.52%       0.000      0.000
+     ZISLAM                0.024       6.247       0.000   97.62%       0.000      0.000      0.000
+              42.000       0.023      37.024       1.000    2.38%       0.000      0.000
+     ZORT                  0.167       1.789       0.000   83.33%       0.000      0.000      0.000
+              42.000       0.139       1.200       1.000   16.67%       0.000      0.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+     USE THE FBITERATIONS OPTION TO INCREASE THE NUMBER OF ITERATIONS BY A FACTOR
+     OF AT LEAST TWO TO CHECK CONVERGENCE AND THAT THE PSR VALUE DOES NOT INCREASE.
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                              41
+
+Bayesian Posterior Predictive Checking using Chi-Square
+
+          95% Confidence Interval for the Difference Between
+          the Observed and the Replicated Chi-Square Values
+
+                                609.115           746.453
+
+          Posterior Predictive P-Value              0.000
+
+
+
+MODEL RESULTS
+
+                                Posterior  One-Tailed         95% C.I.
+                    Estimate       S.D.      P-Value   Lower 2.5%  Upper 2.5%  Significance
+
+Within Level
+
+ REL_W    BY
+    IMPREL             1.000       0.000      0.000       1.000       1.000
+    PERSON             1.219       0.019      0.000       1.184       1.257      *
+    CONFIDENCE         0.606       0.007      0.000       0.591       0.620      *
+    PRAY               1.254       0.014      0.000       1.228       1.281      *
+    ATTEND             0.964       0.011      0.000       0.943       0.986      *
+    BELONG             1.012       0.016      0.000       0.983       1.044      *
+
+ RES1_W   BY
+    PRAY               1.000       0.000      0.000       1.000       1.000
+    ATTEND             1.000       0.000      0.000       1.000       1.000
+
+ RES2_W   BY
+    PERSON             1.000       0.000      0.000       1.000       1.000
+    BELONG             1.000       0.000      0.000       1.000       1.000
+
+ RES1_W   WITH
+    REL_W              0.000       0.000      1.000       0.000       0.000
+    RES2_W             0.000       0.000      1.000       0.000       0.000
+
+ RES2_W   WITH
+    REL_W              0.000       0.000      1.000       0.000       0.000
+
+ Variances
+    REL_W              1.620       0.030      0.000       1.563       1.681      *
+    RES1_W             0.606       0.014      0.000       0.578       0.634      *
+    RES2_W             0.272       0.021      0.000       0.234       0.315      *
+
+ Residual Variances
+    PRAY               2.137       0.018      0.000       2.103       2.172      *
+    ATTEND             1.351       0.013      0.000       1.327       1.377      *
+
+Between Level
+
+ REL_B    BY
+    IMPREL             1.000       0.000      0.000       1.000       1.000
+    PERSON             0.736       0.084      0.000       0.572       0.902      *
+    CONFIDENCE         0.447       0.048      0.000       0.351       0.543      *
+    PRAY               1.262       0.062      0.000       1.141       1.387      *
+    ATTEND             0.787       0.107      0.000       0.576       0.999      *
+    BELONG             0.830       0.127      0.000       0.573       1.076      *
+
+ RES1_B   BY
+    PRAY               1.000       0.000      0.000       1.000       1.000
+    ATTEND             1.000       0.000      0.000       1.000       1.000
+
+ RES2_B   BY
+    PERSON             1.000       0.000      0.000       1.000       1.000
+    BELONG             1.000       0.000      0.000       1.000       1.000
+
+ ATTEND     ON
+    ZAFRICA            0.371       0.604      0.261      -0.798       1.584
+    ZLA               -0.119       0.277      0.334      -0.660       0.433
+    ZINDIC            -0.029       0.398      0.470      -0.816       0.769
+    ZSINIC             0.041       0.355      0.447      -0.657       0.752
+    ZNWEST            -0.351       0.270      0.096      -0.873       0.189
+    ZISLAM            -0.641       0.543      0.116      -1.705       0.423
+    ZORT              -0.303       0.249      0.109      -0.790       0.184
+
+ RES1_B   WITH
+    REL_B              0.000       0.000      1.000       0.000       0.000
+    RES2_B             0.000       0.000      1.000       0.000       0.000
+
+ RES2_B   WITH
+    REL_B              0.000       0.000      1.000       0.000       0.000
+
+ Intercepts
+    PRAY               4.816       0.199      0.000       4.456       5.235      *
+    ATTEND             3.661       0.203      0.000       3.285       4.085      *
+
+ Thresholds
+    IMPREL$1          -1.933       0.150      0.000      -2.261      -1.668      *
+    IMPREL$2          -0.495       0.150      0.000      -0.822      -0.233      *
+    IMPREL$3           0.800       0.150      0.000       0.471       1.061      *
+    PERSON$1          -0.657       0.144      0.000      -0.955      -0.387      *
+    CONFIDEN$1        -1.520       0.073      0.000      -1.664      -1.382      *
+    CONFIDEN$2        -0.242       0.073      0.000      -0.385      -0.102      *
+    CONFIDEN$3         1.003       0.073      0.000       0.859       1.145      *
+    BELONG$1          -1.275       0.189      0.000      -1.651      -0.914      *
+
+ Variances
+    REL_B              1.495       0.365      0.000       0.976       2.387      *
+    RES1_B             0.069       0.050      0.000       0.005       0.194      *
+    RES2_B             0.218       0.103      0.000       0.048       0.456      *
+
+ Residual Variances
+    IMPREL             0.013       0.016      0.000       0.001       0.061      *
+    PERSON             0.145       0.093      0.000       0.017       0.376      *
+    CONFIDENCE         0.122       0.032      0.000       0.079       0.204      *
+    BELONG             0.655       0.191      0.000       0.390       1.123      *
+    PRAY               0.101       0.053      0.000       0.017       0.226      *
+    ATTEND             0.164       0.061      0.000       0.080       0.315      *
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION FOR WITHIN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                    0             0             0
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              ATTEND
+              ________
+                    0
+
+
+           LAMBDA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ IMPREL             0             0             0             0
+ PERSON             1             0             0             0
+ CONFIDEN           2             0             0             0
+ BELONG             3             0             0             0
+ PRAY               4             0             0             0
+ ATTEND             0             0             0             0
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL             0
+ PERSON             0             0
+ CONFIDEN           0             0             0
+ BELONG             0             0             0             0
+ PRAY               0             0             0             0             5
+ ATTEND             0             0             0             0             0
+
+
+           THETA
+              ATTEND
+              ________
+ ATTEND             0
+
+
+           ALPHA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+                    0             0             0             0
+
+
+           BETA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W              0             0             0             0
+ RES1_W             0             0             0             0
+ RES2_W             0             0             0             0
+ ATTEND             6             0             0             0
+
+
+           PSI
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W              7
+ RES1_W             0             8
+ RES2_W             0             0             9
+ ATTEND             0             0             0            10
+
+
+     PARAMETER SPECIFICATION FOR BETWEEN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                   34            35            36            37            38
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                   39            40            41
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                    0             0             0             0            11
+
+
+           NU
+              ATTEND        ZAFRICA       ZLA           ZINDIC        ZSINIC
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           NU
+              ZNWEST        ZISLAM        ZORT
+              ________      ________      ________
+                    0             0             0
+
+
+           LAMBDA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ IMPREL             0             0             0             0             0
+ PERSON            12             0             0             0             0
+ CONFIDEN          13             0             0             0             0
+ BELONG            14             0             0             0             0
+ PRAY              15             0             0             0             0
+ ATTEND             0             0             0             0             0
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           LAMBDA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ IMPREL             0             0             0             0             0
+ PERSON             0             0             0             0             0
+ CONFIDEN           0             0             0             0             0
+ BELONG             0             0             0             0             0
+ PRAY               0             0             0             0             0
+ ATTEND             0             0             0             0             0
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           LAMBDA
+              ZORT
+              ________
+ IMPREL             0
+ PERSON             0
+ CONFIDEN           0
+ BELONG             0
+ PRAY               0
+ ATTEND             0
+ ZAFRICA            0
+ ZLA                0
+ ZINDIC             0
+ ZSINIC             0
+ ZNWEST             0
+ ZISLAM             0
+ ZORT               0
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL            16
+ PERSON             0            17
+ CONFIDEN           0             0            18
+ BELONG             0             0             0            19
+ PRAY               0             0             0             0            20
+ ATTEND             0             0             0             0             0
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           THETA
+              ATTEND        ZAFRICA       ZLA           ZINDIC        ZSINIC
+              ________      ________      ________      ________      ________
+ ATTEND             0
+ ZAFRICA            0             0
+ ZLA                0             0             0
+ ZINDIC             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           THETA
+              ZNWEST        ZISLAM        ZORT
+              ________      ________      ________
+ ZNWEST             0
+ ZISLAM             0             0
+ ZORT               0             0             0
+
+
+           ALPHA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+                    0             0             0            21             0
+
+
+           ALPHA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+                    0             0             0             0             0
+
+
+           ALPHA
+              ZORT
+              ________
+                    0
+
+
+           BETA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ REL_B              0             0             0             0             0
+ RES1_B             0             0             0             0             0
+ RES2_B             0             0             0             0             0
+ ATTEND            22             0             0             0            23
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           BETA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ REL_B              0             0             0             0             0
+ RES1_B             0             0             0             0             0
+ RES2_B             0             0             0             0             0
+ ATTEND            24            25            26            27            28
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           BETA
+              ZORT
+              ________
+ REL_B              0
+ RES1_B             0
+ RES2_B             0
+ ATTEND            29
+ ZAFRICA            0
+ ZLA                0
+ ZINDIC             0
+ ZSINIC             0
+ ZNWEST             0
+ ZISLAM             0
+ ZORT               0
+
+
+           PSI
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ REL_B             30
+ RES1_B             0            31
+ RES2_B             0             0            32
+ ATTEND             0             0             0            33
+ ZAFRICA            0             0             0             0             0
+ ZLA                0             0             0             0             0
+ ZINDIC             0             0             0             0             0
+ ZSINIC             0             0             0             0             0
+ ZNWEST             0             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           PSI
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ ZLA                0
+ ZINDIC             0             0
+ ZSINIC             0             0             0
+ ZNWEST             0             0             0             0
+ ZISLAM             0             0             0             0             0
+ ZORT               0             0             0             0             0
+
+
+           PSI
+              ZORT
+              ________
+ ZORT               0
+
+
+     STARTING VALUES FOR WITHIN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              ATTEND
+              ________
+                0.000
+
+
+           LAMBDA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ IMPREL         1.000         0.000         0.000         0.000
+ PERSON         1.000         0.000         1.000         0.000
+ CONFIDEN       1.000         0.000         0.000         0.000
+ BELONG         1.000         0.000         1.000         0.000
+ PRAY           1.000         1.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         1.000
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         0.000         1.000
+ CONFIDEN       0.000         0.000         1.000
+ BELONG         0.000         0.000         0.000         1.000
+ PRAY           0.000         0.000         0.000         0.000         3.772
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ATTEND
+              ________
+ ATTEND         0.000
+
+
+           ALPHA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           BETA
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W          0.000         0.000         0.000         0.000
+ RES1_W         0.000         0.000         0.000         0.000
+ RES2_W         0.000         0.000         0.000         0.000
+ ATTEND         1.000         1.000         0.000         0.000
+
+
+           PSI
+              REL_W         RES1_W        RES2_W        ATTEND
+              ________      ________      ________      ________
+ REL_W          1.000
+ RES1_W         0.000         1.000
+ RES2_W         0.000         0.000         1.000
+ ATTEND         0.000         0.000         0.000         2.251
+
+
+     STARTING VALUES FOR BETWEEN
+
+
+           TAU
+              IMPREL$1      IMPREL$2      IMPREL$3      PERSON$1      CONFIDEN
+              ________      ________      ________      ________      ________
+               -0.826        -0.202         0.346        -0.249        -0.981
+
+
+           TAU
+              CONFIDEN      CONFIDEN      BELONG$1
+              ________      ________      ________
+               -0.135         0.655        -0.478
+
+
+           NU
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         4.774
+
+
+           NU
+              ATTEND        ZAFRICA       ZLA           ZINDIC        ZSINIC
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           NU
+              ZNWEST        ZISLAM        ZORT
+              ________      ________      ________
+                0.000         0.000         0.000
+
+
+           LAMBDA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ IMPREL         1.000         0.000         0.000         0.000         0.000
+ PERSON         1.000         0.000         1.000         0.000         0.000
+ CONFIDEN       1.000         0.000         0.000         0.000         0.000
+ BELONG         1.000         0.000         1.000         0.000         0.000
+ PRAY           1.000         1.000         0.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         1.000         0.000
+ ZAFRICA        0.000         0.000         0.000         0.000         1.000
+ ZLA            0.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ IMPREL         0.000         0.000         0.000         0.000         0.000
+ PERSON         0.000         0.000         0.000         0.000         0.000
+ CONFIDEN       0.000         0.000         0.000         0.000         0.000
+ BELONG         0.000         0.000         0.000         0.000         0.000
+ PRAY           0.000         0.000         0.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+ ZAFRICA        0.000         0.000         0.000         0.000         0.000
+ ZLA            1.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         1.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         1.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         1.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         1.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           LAMBDA
+              ZORT
+              ________
+ IMPREL         0.000
+ PERSON         0.000
+ CONFIDEN       0.000
+ BELONG         0.000
+ PRAY           0.000
+ ATTEND         0.000
+ ZAFRICA        0.000
+ ZLA            0.000
+ ZINDIC         0.000
+ ZSINIC         0.000
+ ZNWEST         0.000
+ ZISLAM         0.000
+ ZORT           1.000
+
+
+           THETA
+              IMPREL        PERSON        CONFIDEN      BELONG        PRAY
+              ________      ________      ________      ________      ________
+ IMPREL         1.000
+ PERSON         0.000         1.000
+ CONFIDEN       0.000         0.000         1.000
+ BELONG         0.000         0.000         0.000         1.000
+ PRAY           0.000         0.000         0.000         0.000         3.772
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+ ZAFRICA        0.000         0.000         0.000         0.000         0.000
+ ZLA            0.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ATTEND        ZAFRICA       ZLA           ZINDIC        ZSINIC
+              ________      ________      ________      ________      ________
+ ATTEND         0.000
+ ZAFRICA        0.000         0.000
+ ZLA            0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              ZNWEST        ZISLAM        ZORT
+              ________      ________      ________
+ ZNWEST         0.000
+ ZISLAM         0.000         0.000
+ ZORT           0.000         0.000         0.000
+
+
+           ALPHA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         3.501         0.000
+
+
+           ALPHA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ALPHA
+              ZORT
+              ________
+                0.000
+
+
+           BETA
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ REL_B          0.000         0.000         0.000         0.000         0.000
+ RES1_B         0.000         0.000         0.000         0.000         0.000
+ RES2_B         0.000         0.000         0.000         0.000         0.000
+ ATTEND         1.000         1.000         0.000         0.000         0.000
+ ZAFRICA        0.000         0.000         0.000         0.000         0.000
+ ZLA            0.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ REL_B          0.000         0.000         0.000         0.000         0.000
+ RES1_B         0.000         0.000         0.000         0.000         0.000
+ RES2_B         0.000         0.000         0.000         0.000         0.000
+ ATTEND         0.000         0.000         0.000         0.000         0.000
+ ZAFRICA        0.000         0.000         0.000         0.000         0.000
+ ZLA            0.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           BETA
+              ZORT
+              ________
+ REL_B          0.000
+ RES1_B         0.000
+ RES2_B         0.000
+ ATTEND         0.000
+ ZAFRICA        0.000
+ ZLA            0.000
+ ZINDIC         0.000
+ ZSINIC         0.000
+ ZNWEST         0.000
+ ZISLAM         0.000
+ ZORT           0.000
+
+
+           PSI
+              REL_B         RES1_B        RES2_B        ATTEND        ZAFRICA
+              ________      ________      ________      ________      ________
+ REL_B          1.000
+ RES1_B         0.000         1.000
+ RES2_B         0.000         0.000         1.000
+ ATTEND         0.000         0.000         0.000         2.251
+ ZAFRICA        0.000         0.000         0.000         0.000         0.013
+ ZLA            0.000         0.000         0.000         0.000         0.000
+ ZINDIC         0.000         0.000         0.000         0.000         0.000
+ ZSINIC         0.000         0.000         0.000         0.000         0.000
+ ZNWEST         0.000         0.000         0.000         0.000         0.000
+ ZISLAM         0.000         0.000         0.000         0.000         0.000
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              ZLA           ZINDIC        ZSINIC        ZNWEST        ZISLAM
+              ________      ________      ________      ________      ________
+ ZLA            0.098
+ ZINDIC         0.000         0.026
+ ZSINIC         0.000         0.000         0.023
+ ZNWEST         0.000         0.000         0.000         0.067
+ ZISLAM         0.000         0.000         0.000         0.000         0.012
+ ZORT           0.000         0.000         0.000         0.000         0.000
+
+
+           PSI
+              ZORT
+              ________
+ ZORT           0.066
+
+
+
+     PRIORS FOR ALL PARAMETERS            PRIOR MEAN      PRIOR VARIANCE     PRIOR STD. DEV.
+
+     Parameter 1~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 2~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 3~N(0.000,5.000)              0.0000              5.0000              2.2361
+     Parameter 4~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 5~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 6~N(0.000,infinity)           0.0000            infinity            infinity
+     Parameter 7~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 8~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 9~IG(-1.000,0.000)          infinity            infinity            infinity
+     Parameter 10~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 11~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 12~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 13~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 14~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 15~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 16~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 17~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 18~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 19~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 20~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 21~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 22~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 23~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 24~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 25~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 26~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 27~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 28~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 29~N(0.000,infinity)          0.0000            infinity            infinity
+     Parameter 30~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 31~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 32~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 33~IG(-1.000,0.000)         infinity            infinity            infinity
+     Parameter 34~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 35~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 36~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 37~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 38~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 39~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 40~N(0.000,5.000)             0.0000              5.0000              2.2361
+     Parameter 41~N(0.000,5.000)             0.0000              5.0000              2.2361
+
+
+TECHNICAL 8 OUTPUT
+
+
+   TECHNICAL 8 OUTPUT FOR BAYES ESTIMATION
+
+     CHAIN    BSEED
+     1        0
+     2        285380
+
+                     POTENTIAL       PARAMETER WITH
+     ITERATION    SCALE REDUCTION      HIGHEST PSR
+     100              3.687               36
+     200              1.548               36
+     300              2.130               34
+     400              2.542               34
+     500              3.242               34
+     600              2.402               34
+     700              2.016               35
+     800              1.713               35
+     900              1.428               35
+     1000             1.537               35
+     1100             1.710               35
+     1200             1.923               35
+     1300             1.631               35
+     1400             1.170               35
+     1500             1.086               39
+     1600             1.099               9
+     1700             1.169               39
+     1800             1.147               39
+     1900             1.157               39
+     2000             1.127               39
+     2100             1.211               39
+     2200             1.301               39
+     2300             1.321               39
+     2400             1.134               39
+     2500             1.092               34
+     2600             1.047               34
+     2700             1.024               34
+     2800             1.009               1
+     2900             1.016               40
+     3000             1.027               36
+     3100             1.033               36
+     3200             1.038               36
+     3300             1.054               36
+     3400             1.061               36
+     3500             1.058               36
+     3600             1.055               36
+     3700             1.042               40
+     3800             1.028               36
+     3900             1.018               36
+     4000             1.011               36
+     4100             1.004               40
+     4200             1.002               40
+     4300             1.003               34
+     4400             1.008               35
+     4500             1.013               34
+     4600             1.017               35
+     4700             1.025               35
+     4800             1.032               35
+     4900             1.046               35
+     5000             1.061               35
+     5100             1.066               35
+     5200             1.084               36
+     5300             1.106               35
+     5400             1.123               35
+     5500             1.148               35
+     5600             1.187               35
+     5700             1.237               35
+     5800             1.284               35
+     5900             1.303               34
+     6000             1.309               35
+     6100             1.272               35
+     6200             1.269               35
+     6300             1.268               36
+     6400             1.243               36
+     6500             1.220               36
+     6600             1.211               36
+     6700             1.202               36
+     6800             1.192               36
+     6900             1.174               36
+     7000             1.187               35
+     7100             1.203               34
+     7200             1.229               34
+     7300             1.253               34
+     7400             1.271               35
+     7500             1.292               35
+     7600             1.315               35
+     7700             1.329               35
+     7800             1.317               35
+     7900             1.318               35
+     8000             1.340               36
+     8100             1.364               36
+     8200             1.380               36
+     8300             1.397               36
+     8400             1.410               36
+     8500             1.423               36
+     8600             1.421               36
+     8700             1.423               36
+     8800             1.411               35
+     8900             1.388               35
+     9000             1.329               36
+     9100             1.276               35
+     9200             1.241               36
+     9300             1.203               36
+     9400             1.182               36
+     9500             1.172               36
+     9600             1.168               40
+     9700             1.165               40
+     9800             1.159               40
+     9900             1.153               40
+     10000            1.156               40
+
+
+PLOT INFORMATION
+
+The following plots are available:
+
+  Sample proportions and estimated probabilities
+  Bayesian posterior parameter distributions
+  Bayesian posterior parameter trace plots
+  Bayesian autocorrelation plots
+  Bayesian prior parameter distributions
+  Bayesian posterior predictive checking scatterplots
+  Bayesian posterior predictive checking distribution plots
+
+SAVEDATA INFORMATION
+
+
+  Bayesian Parameters
+
+  Save file
+    parameters.dat
+  Save format      Free
+
+  Order of parameters saved
+
+    Chain number
+    Iteration number
+    Parameter 1, %WITHIN%: REL_W BY PERSON
+    Parameter 2, %WITHIN%: REL_W BY CONFIDENCE
+    Parameter 3, %WITHIN%: REL_W BY BELONG
+    Parameter 4, %WITHIN%: REL_W BY PRAY
+    Parameter 5, %WITHIN%: PRAY
+    Parameter 6, %WITHIN%: ATTEND ON REL_W
+    Parameter 7, %WITHIN%: REL_W
+    Parameter 8, %WITHIN%: RES1_W
+    Parameter 9, %WITHIN%: RES2_W
+    Parameter 10, %WITHIN%: ATTEND
+    Parameter 11, %BETWEEN%: [ PRAY ]
+    Parameter 12, %BETWEEN%: REL_B BY PERSON
+    Parameter 13, %BETWEEN%: REL_B BY CONFIDENCE
+    Parameter 14, %BETWEEN%: REL_B BY BELONG
+    Parameter 15, %BETWEEN%: REL_B BY PRAY
+    Parameter 16, %BETWEEN%: IMPREL
+    Parameter 17, %BETWEEN%: PERSON
+    Parameter 18, %BETWEEN%: CONFIDENCE
+    Parameter 19, %BETWEEN%: BELONG
+    Parameter 20, %BETWEEN%: PRAY
+    Parameter 21, %BETWEEN%: [ ATTEND ]
+    Parameter 22, %BETWEEN%: ATTEND ON REL_B
+    Parameter 23, %BETWEEN%: ATTEND ON ZAFRICA
+    Parameter 24, %BETWEEN%: ATTEND ON ZLA
+    Parameter 25, %BETWEEN%: ATTEND ON ZINDIC
+    Parameter 26, %BETWEEN%: ATTEND ON ZSINIC
+    Parameter 27, %BETWEEN%: ATTEND ON ZNWEST
+    Parameter 28, %BETWEEN%: ATTEND ON ZISLAM
+    Parameter 29, %BETWEEN%: ATTEND ON ZORT
+    Parameter 30, %BETWEEN%: REL_B
+    Parameter 31, %BETWEEN%: RES1_B
+    Parameter 32, %BETWEEN%: RES2_B
+    Parameter 33, %BETWEEN%: ATTEND
+    Parameter 34, %BETWEEN%: [ IMPREL$1 ]
+    Parameter 35, %BETWEEN%: [ IMPREL$2 ]
+    Parameter 36, %BETWEEN%: [ IMPREL$3 ]
+    Parameter 37, %BETWEEN%: [ PERSON$1 ]
+    Parameter 38, %BETWEEN%: [ CONFIDENCE$1 ]
+    Parameter 39, %BETWEEN%: [ CONFIDENCE$2 ]
+    Parameter 40, %BETWEEN%: [ CONFIDENCE$3 ]
+    Parameter 41, %BETWEEN%: [ BELONG$1 ]
+
+     Beginning Time:  10:54:45
+        Ending Time:  15:10:52
+       Elapsed Time:  04:16:07
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2019 Muthen & Muthen

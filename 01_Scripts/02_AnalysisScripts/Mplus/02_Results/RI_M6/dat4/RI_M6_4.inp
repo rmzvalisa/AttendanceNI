@@ -1,0 +1,66 @@
+TITLE: M6 dat4;
+
+DATA: 
+FILE = mlsem_dat4.dat;
+
+VARIABLE: 
+NAMES = country imprel confidence belong attend pray person year code RCCHR RCMUSLIM
+     RCASIAN RCOTHER COMMALL RRI RLI ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT
+     ZEUWEST; 
+USEVARIABLES = country imprel person confidence pray attend belong 
+     ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+MISSING = .;
+
+BETWEEN = ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+CLUSTER = country;
+CATEGORICAL = imprel confidence belong person;
+
+ANALYSIS: 
+ESTIMATOR = BAYES;
+PROCESSORS = 2; 
+TYPE = TWOLEVEL; 
+THIN = 20;
+FBITERATIONS = 10000;
+
+MODEL: 
+%WITHIN%
+Rel_W BY imprel person confidence pray attend belong;
+Res1_W BY pray@1 attend@1;
+Res2_W BY person@1 belong@1;
+Res1_W WITH Rel_W@0;
+Res2_W WITH Rel_W@0;
+Res1_W WITH Res2_W@0;
+
+%BETWEEN%
+Rel_B BY imprel person confidence pray attend belong;
+Res1_B BY pray@1 attend@1;
+Res2_B BY person@1 belong@1;
+Res1_B WITH Rel_B@0;
+Res2_B WITH Rel_B@0;
+Res1_B WITH Res2_B@0;
+
+attend ON ZAFRICA ZLA ZINDIC ZSINIC ZNWEST ZISLAM ZORT;
+
+[imprel$1] (t1);
+[imprel$2] (t2);
+[imprel$3] (t3);
+[confidence$1] (t4);
+[confidence$2] (t5);
+[confidence$3] (t6);
+
+MODEL PRIORS:
+t1 ~ N(-1.435, 0.001);
+t2 ~ N(-0.097, 0.001);
+t3 ~ N(1.100, 0.001);
+t4 ~ N(-1.240, 0.001);
+t5 ~ N(-0.068, 0.001);
+t6 ~ N(1.084, 0.001);
+
+OUTPUT: 
+TECH8;
+
+PLOT: 
+TYPE = PLOT2;
+
+SAVEDATA:
+BPARAMETERS = parameters.dat;
