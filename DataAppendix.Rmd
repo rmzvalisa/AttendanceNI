@@ -1,0 +1,912 @@
+---
+title: "Data Appendix - WVS variables after data preparation"
+author: "Remizova Alisa"
+output: pdf_document
+---
+
+This is a description of the individual-level data after preparatory analysis. The dataset is the combined data of the two latest rounds of the World Values Survey (WVS). Each row is individual observation (respondent).
+
+There are the following changes compared to the original WVS data:
+
+1. For the identification as a religious person item, the "non-religious" and "atheist" response options are collapsed into a single category "not religious" category so that the variable differentiates between religious and non-religious respondents.
+2. The belonging to a denomination indicator is recoded into a binary variable corresponding to affiliation and non-affiliation with a denomination.
+3. The response options of all indicators are recoded so that higher scores correspond to higher religiosity.
+4. All variables except gender are converted from factor to numeric format that is necessary for the further analysis.
+
+```{r prep, echo = FALSE, message = FALSE, warning = FALSE}
+# Please run the code for the data preparation (the same as in the master script)
+
+library(car)
+library(foreign)
+library(haven)
+library(dplyr)
+library(mice)
+library(LittleHelpers)
+library(MplusAutomation)
+library(readxl)
+library(gdata)
+library(kableExtra) 
+library(sna)
+library(reshape2)
+
+# Upload two functions written for the current analysis
+source("./01_Scripts/02_AnalysisScripts/AddFunctions.R")
+
+# DATA PREPARATION
+
+# WVS 7 
+
+# Religiosity indicators:
+## Q6 - For each of the following, indicate how important it is in your life - Religion
+## Q64 - For each one, could you tell me how much confidence you have in them. The Churches
+## Q289 - Do you belong to a religion or religious denomination? 
+## Q171 - Apart from weddings and funerals, about how often do you attend religious services these days?
+## Q172 - Apart from weddings and funerals, about how often do you pray?
+## Q173 - Would you say you are... religious / not a religious person / an atheist
+
+## Q94 - For each organization, could you tell me whether you are….? 
+### active / inactive member / do not belong. Church or religious organization
+## Q165 - Which, if any, of the following do you believe in? God?
+## Q167 - Hell
+## Q164 - How important is God in your life?
+
+# Missing data correlates:
+## Q260 - Gender: Male Female 
+## Q262 - You are ____ years old 
+## Q288 - On this card is an income scale on which 1 indicates the lowest income group and 10 the highest income group
+### in your country. We would like to know in what group your household is. 
+### from Lower step to Tenth step 
+## Q275 - What is the highest educational level that you have attained?
+### from Early childhood education / no education
+### to Doctoral or equivalent
+
+# Other variables:
+## B_COUNTRY - Country name
+## N_REGION_ISO - Country-specific region (necessary for Germany)
+## A_YEAR - Survey year
+
+# Upload country codes
+codes <- read_excel("./02_Data/01_InputData/CountryInfo.xlsx", sheet = "Country codes")
+
+# Read data
+WVS7 <- read.spss("./02_Data/01_InputData/WVS_Cross-National_Wave_7_sav_v2_0.sav", 
+                  use.value.labels = T, to.data.frame = T, 
+                  use.missings = T)
+## Ignore the warnings
+
+# Set the same country names in WVS7 as in WVS6:
+levels(WVS7$B_COUNTRY)[levels(WVS7$B_COUNTRY)=="Taiwan ROC"] <- "Taiwan"
+levels(WVS7$B_COUNTRY)[levels(WVS7$B_COUNTRY)=="Hong Kong SAR"] <- "Hong Kong"
+
+# Merge with country codes
+WVS7 <- merge(WVS7, codes, by.x = c("B_COUNTRY"), by.y = c("country"),  all.x = T)
+
+# Select only necessary variables
+rel_data <- select(WVS7, c(B_COUNTRY, N_REGION_ISO, Q6, Q94, Q64, Q289, Q171, Q172, Q173, Q165, Q167, 
+                           Q164, Q260, Q262, Q288, Q275, A_YEAR, code)) 
+
+# Set the following column names for religiosity indicators:
+## Importance of religion = imprel
+## Membership in a religious organisation = member
+## Confidence in institutions = confidence
+## Belonging to a denomination = belong
+## Frequency of attendance = attend
+## Frequency of praying = pray
+## Identification as religious person = person
+## Belief in God = bgod
+## Belief in hell = bhell
+## Importance of God = impgod
+colnames(rel_data) <- c("country", "region", "imprel", "member", "confidence", "belong", "attend",
+                        "pray", "person", "bgod", "bhell", "impgod", 
+                        "gender", "age", "income", "education", "year", "code")
+
+# Make two separate samples for Germany: East and West
+Germany <- rel_data[rel_data$country == "Germany", ]
+Germany$region <- droplevels(Germany$region)
+Germany$country <- droplevels(Germany$country)
+
+# Recode and drop Berlin
+Germany$country <- Recode(
+  Germany$region,
+  recodes = "'DE-MV Mecklenburg-Western Pomerania' = 'Germany East';
+  'DE-BB Brandenburg' = 'Germany East';
+  'DE-SN Saxony' = 'Germany East';
+  'DE-ST Saxony-Anhalt' = 'Germany East';
+  'DE-TH Thuringia' = 'Germany East';
+  'DE-BE Berlin' = NA;
+  else = 'Germany West'",
+  as.factor = T)
+
+Germany <- Germany[!is.na(Germany$country), ]
+
+# Add to the main dataset
+rel_data <- rbind(rel_data, Germany)
+rel_data <- subset(
+  rel_data, subset = !(rel_data$country == "Germany"))
+rel_data$region <- NULL
+rm(Germany)
+
+# Add country-specific data files for Kenya, Armenia, Mongolia, 
+## Venezuela, Maldives, Northern Ireland, Great Britain, Czechia, and Slovakia from WVS7 last release
+## (countries not included in the second WVS 7 release and WVS 6)
+## with haven package so that the variables' values are trimmed
+
+WVS7_05 <- read_spss("./02_Data/01_InputData/WVS_Cross-National_Wave_7_spss_v5_0.sav")
+
+# Select columns
+rel_data_05 <- select(WVS7_05, c(B_COUNTRY, Q6, Q94, Q64, Q289, Q171, Q172, Q173, Q165,
+                                 Q167, Q164, Q260, Q262, Q288, Q275, A_YEAR))
+
+colnames(rel_data_05) <- c("country", "imprel", "member", "confidence", "belong", "attend",
+                           "pray", "person", "bgod", "bhell", "impgod", 
+                           "gender", "age", "income", "education", "year")
+
+# Recode to labelled factors
+for (item in c("country", "imprel", "member", "confidence", "belong", "attend",
+               "pray", "person", "bgod", "bhell", "impgod", 
+               "gender", "age", "income", "education", "year")) {
+  rel_data_05[, item] <- as_factor(rel_data_05[, item])
+  rel_data_05[, item] <- droplevels(rel_data_05[, item])
+  
+}
+
+# Subset countries
+rel_data_05 <- subset(rel_data_05, subset = rel_data_05$country %in% 
+                        c("Northern Ireland", "Czechia", "Slovakia", "Great Britain", "Kenya", 
+                          "Armenia", "Mongolia", "Venezuela", "Maldives"))
+rel_data_05$country <- droplevels(rel_data_05$country)
+
+# Merge with country codes
+rel_data_05 <- merge(rel_data_05, codes, by = c("country"),  all.x = T)
+
+# Recode income because of different coding 
+rel_data$income <- as.numeric(rel_data$income)
+rel_data_05$income <- as.numeric(rel_data_05$income)
+
+# Combine WVS 7 datasets
+rel_data <- rbind(rel_data, rel_data_05)
+## 61 countries - do not count "Germany"
+
+# -------------
+  
+# WVS 6
+
+# Religiosity indicators:
+## V9 - For each of the following, indicate how important it is in your life: Religion
+## V108 - For each one, could you tell me how much confidence you have in them. The Churches
+## V144 - Do you belong to a religion or religious denomination? 
+## V145 - Apart from weddings and funerals, about how often do you attend religious services these days?
+## V146 - Apart from weddings and funerals, about how often do you pray?
+## V147 - Would you say you are... religious / not a religious person / an atheist
+
+## V25 - For each organization, could you tell me whether you are….? 
+### active / inactive member / do not belong. Church or religious organization
+## V148 - Do you believe in God?
+## V149 - Do you believe in hell? 
+## V152 - How important is God in your life?
+
+# Missing data correlates:
+# V240 - Gender: Male Female 
+# V242 - You are ____ years old 
+# V239 - On this card is an income scale on which 1 indicates the lowest income group and 10 the highest
+## income group in your country. We would like to know in what group your household is. 
+## from Lower step to Tenth step
+# V248 - What is the highest educational level that you have attained?
+## from No formal education to University - level education, with degree 
+
+# Other variables:
+## V2 - Country name
+
+# Read data
+WVS6 <- read.spss("./02_Data/01_InputData/WV6_Data_Spss_v20180912.sav", use.value.labels = T, 
+                  to.data.frame = T, use.missings = T)
+## Ignore the warnings
+
+# Upload survey year
+WVS6_year <- read_excel("./02_Data/01_InputData/CountryInfo.xlsx", sheet = "Survey year")
+
+# Merge with country codes and survey year
+WVS6 <- merge(WVS6, WVS6_year, by.x = c("V2"), by.y = c("country"), all.x = T)
+WVS6 <- merge(WVS6, codes, by.x = c("V2"), by.y = c("country"),  all.x = T)
+
+# Select only necessary variables
+rel_data_WVS6 <- select(WVS6, c(V2, V9, V25, V108, V144:V149, V152, 
+                                V240, V242, V239, V248, year, code))
+
+colnames(rel_data_WVS6) <- c("country", "imprel", "member", "confidence", "belong", "attend",
+                             "pray", "person", "bgod", "bhell", "impgod", 
+                             "gender", "age", "income", "education", "year", "code")
+
+# Subset countries that did not participate in WVS 7
+rel_data_WVS6 <- subset(rel_data_WVS6, subset = 
+                          !(rel_data_WVS6$country %in% levels(rel_data$country)))
+rel_data_WVS6$country <- droplevels(rel_data_WVS6$country)
+# 24 countries
+
+# -------------
+
+# Harmonize "education" indicator for two waves
+## WVS 6
+levels(rel_data_WVS6$education)[levels(rel_data_WVS6$education) == "No formal education"|
+                                  levels(rel_data_WVS6$education) =="Incomplete primary school"] <- 
+  "Early childhood education (ISCED 0) / no education"
+levels(rel_data_WVS6$education)[levels(rel_data_WVS6$education) == "Complete primary school"] <- "Primary education (ISCED 1)"
+levels(rel_data_WVS6$education)[levels(rel_data_WVS6$education) == "Incomplete secondary school: technical/ vocational type"|
+                                  levels(rel_data_WVS6$education) =="Incomplete secondary school: university-preparatory type"] <- 
+  "Lower secondary education (ISCED 2)"
+levels(rel_data_WVS6$education)[levels(rel_data_WVS6$education) == "Complete secondary school: technical/ vocational type"|
+                                  levels(rel_data_WVS6$education) == "Complete secondary school: university-preparatory type"|
+                                  levels(rel_data_WVS6$education) == "Some university-level education, without degree"] <- 
+  "Upper secondary / short tertiary education"
+
+## WVS 7
+levels(rel_data$education)[levels(rel_data$education) == "Upper secondary education (ISCED 3)"|
+                                  levels(rel_data$education) =="Post-secondary non-tertiary education (ISCED 4)"|
+                             levels(rel_data$education) =="Short-cycle tertiary education (ISCED 5)"] <- 
+  "Upper secondary / short tertiary education"
+levels(rel_data$education)[levels(rel_data$education) == "Bachelor or equivalent (ISCED 6)"|
+                             levels(rel_data$education) == "Master or equivalent (ISCED 7)"|
+                             levels(rel_data$education) == "Doctoral or equivalent (ISCED 8)"] <- 
+  "University - level education, with degree"
+rel_data$education <- droplevels(rel_data$education)
+
+# Convert praying, belonging, and membership into numeric class 
+## for each wave separately because of the different coding of levels
+# Also convert year and age to numeric for WVS 7 and age for WVS 6 
+# Also convert income to numeric for WVS 6 because of slightly different coding
+
+for (item in c("member", "belong", "pray")) {
+  rel_data[, item] <- as.numeric(rel_data[, item])
+}
+
+for (item in c("member", "belong", "pray", "income")) {
+  rel_data_WVS6[, item] <- as.numeric(rel_data_WVS6[, item])
+}
+
+for (item in c("age", "year")) {
+  rel_data[, item] <- as.numeric(as.character(rel_data[, item]))
+}
+
+rel_data_WVS6$age <- as.numeric(as.character(rel_data_WVS6$age))
+
+# Combine two waves
+rel_data <- rbind(rel_data, rel_data_WVS6)
+rel_data$country <- droplevels(rel_data$country)
+# 85 countries in total
+
+# -------------
+
+# Recode the remaining variables into numeric
+for (item in c("imprel", "confidence", "attend", "person", "bgod", "bhell", "impgod", 
+               "education")) {
+  rel_data[, item] <- as.numeric(rel_data[, item])
+}
+
+# Reverse recode all variables except impgod and member
+## They do not need to be recoded - higher scores already correspond to higher religiosity
+for (item in c("imprel", "confidence")) {
+  rel_data[,item] <- Recode(rel_data[,item], rec= "1=4; 2=3; 3=2; 4=1; else=NA")
+}
+
+for (item in c("bgod", "bhell")) {
+  rel_data[,item] <- Recode(rel_data[,item], rec= "1=2; 2=1; else=NA")
+}
+
+rel_data$attend <- Recode(rel_data$attend, rec = "1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1; else=NA")
+rel_data$pray <- Recode(rel_data$pray, rec = "1=8; 2=7; 3=6; 4=5; 5=4; 6=3; 7=2; 8=1; else=NA")
+
+# Make person binary
+rel_data$person <- Recode(rel_data$person, rec = "1=2; 2=1; 3=1; else=NA")
+
+# Make belonging binary
+rel_data$belong <- ifelse(rel_data$belong == "1", 1, 2)
+
+```
+
+
+# Main variables 
+
+The main variables were used in the analysis presented in the paper.
+
+## Importance of religion
+
+Question wording: "For each of the following, indicate how important it is in your life - Religion"
+
+WVS name: Q6 in WVS 7 and V9 in WVS 6
+
+Code name: imprel
+
+The variable is the reversed coded version of the original variable so that higher scores correspond to higher importance of religion. 
+
+Final coding: 1 = Not at all important; 2 = Not very important; 3 = Rather important; 4 = Very important
+
+```{r imprel, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyr)
+
+# Create count table by country, with a column for missing values
+imprel_tab <- rel_data %>%
+  group_by(country) %>%
+  count(imprel) %>%
+  spread(imprel, n)
+
+colnames(imprel_tab)[6] <- "Missing"
+
+# Make the columns with N observations
+imprel_tab$N <- rowSums(imprel_tab[, 2:6], na.rm = T)
+
+# Make the missings in percent
+imprel_tab$Missing <- round(
+  imprel_tab$Missing/rowSums(imprel_tab[, 2:6], na.rm = T)*100, 1)
+
+# Replace NAs in the table
+imprel_tab <- imprel_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+# Rename country column with capital letter
+colnames(imprel_tab)[1] <- "Country"
+
+# Order by country
+imprel_tab$Country <- trim(imprel_tab$Country)
+imprel_tab <- imprel_tab[order(imprel_tab$Country), ] 
+
+kable(imprel_tab, "latex", booktabs = T, longtable = T, row.names = F, digits = 2,
+      align = "lcccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations"
+  )
+
+```
+
+## Confidence in institutions
+
+Question wording: "I am going to name a number of organizations. For each one, could you tell me how much confidence you have in them? The Churches"
+
+WVS name: Q64 in WVS 7 and V108 in WVS 6
+
+Code name: confidence
+
+The variable is the reversed coded version of the original variable so that higher scores correspond to higher confidence in institutions. 
+
+Final coding: 1 = None at all important; 2 = Not very much; 3 = Quite a lot; 4 = A great deal
+
+```{r confidence, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+conf_tab <- rel_data %>%
+  group_by(country) %>%
+  count(confidence) %>%
+  spread(confidence, n)
+
+colnames(conf_tab)[6] <- "Missing"
+
+conf_tab$N <- rowSums(conf_tab[, 2:6], na.rm = T)
+
+conf_tab$Missing <- round(
+  conf_tab$Missing/rowSums(conf_tab[, 2:6], na.rm = T)*100, 1)
+
+conf_tab <- conf_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(conf_tab)[1] <- "Country"
+
+conf_tab$Country <- trim(conf_tab$Country)
+conf_tab <- conf_tab[order(conf_tab$Country), ] 
+
+kable(conf_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Belonging to a denomination
+
+Question wording: "Do you belong to a religion or religious denomination? If yes, which one?"
+
+WVS name: Q289 in WVS 7 and V144 in WVS 6
+
+Code name: belong
+
+The variable is the recoded (binary) version of the original variable so that it corresponds to affiliation and non-affiliation with a denomination. 
+
+Final coding: 1 = No, do not belong to a denomination; 2 = Yes, belong to a denomination
+
+```{r belong, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+belong_tab <- rel_data %>%
+  group_by(country) %>%
+  count(belong) %>%
+  spread(belong, n)
+
+colnames(belong_tab)[4] <- "Missing"
+
+belong_tab$N <- rowSums(belong_tab[, 2:4], na.rm = T)
+
+belong_tab$Missing <- round(
+  belong_tab$Missing/rowSums(belong_tab[, 2:4], na.rm = T)*100, 1)
+
+belong_tab <- belong_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(belong_tab)[1] <- "Country"
+
+belong_tab$Country <- trim(belong_tab$Country)
+belong_tab <- belong_tab[order(belong_tab$Country), ] 
+
+kable(belong_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+
+## Frequency of religious attendance
+
+Question wording: "Apart from weddings and funerals, about how often do you attend religious services these days?"
+
+WVS name: Q171 in WVS 7 and V145 in WVS 6
+
+Code name: attend
+
+The variable is the reversed coded version of the original variable so that higher scores correspond to higher frequency of religious attendance. 
+
+Final coding: 1 = Never, practically; 2 = Less often; 3 = Once a year; 4 = Only on special holy days; 5 = Once a month; 6 = Once a week; 7 = More than once a week
+
+```{r attend, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+# Create  table by country, with mean, standard deviation, 
+attend_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(attend, na.rm = T), 2), 
+            SD = round(sd(attend, na.rm = T), 2),
+            Range = paste(min(attend, na.rm = T), max(attend, na.rm = T), sep = "-"),
+            Missing = sum(is.na(attend)),
+            N = length(attend))
+
+# Substitute no missing values with NA
+attend_tab$Missing[attend_tab$Missing == 0] <- NA
+
+# Make the missings in percent
+attend_tab$Missing <- round(attend_tab$Missing/attend_tab$N*100, 1)
+
+# Replace NAs in the table 
+attend_tab <- attend_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+attend_tab$Range[attend_tab$Range == "Inf--Inf"] <- "-"
+
+# Rename country column with capital letter
+colnames(attend_tab)[1] <- "Country"
+
+# Order by country
+attend_tab$Country <- trim(attend_tab$Country)
+attend_tab <- attend_tab[order(attend_tab$Country), ] 
+
+kable(attend_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Frequency of praying
+
+Question wording: "Apart from weddings and funerals, about how often do you pray?"
+
+WVS name: Q172 in WVS 7 and V146 in WVS 6
+
+Code name: pray
+
+The variable is the reversed coded version of the original variable so that higher scores correspond to higher frequency of praying. 
+
+Final coding: 1 = Never, practically never; 2 = Less often (Less often than once a year in WVS 6); 3 = Once a year; 4 = Only on special holy days; 5 = Only when attending religious services; 6 = Several times each week; 7 = Once a day; 8 = Several times a day
+
+```{r pray, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+pray_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(pray, na.rm = T), 2), 
+            SD = round(sd(pray, na.rm = T), 2),
+            Range = paste(min(pray, na.rm = T), max(pray, na.rm = T), sep = "-"),
+            Missing = sum(is.na(pray)),
+            N = length(pray))
+
+pray_tab$Missing[pray_tab$Missing == 0] <- NA
+pray_tab$Missing <- round(pray_tab$Missing/pray_tab$N*100, 1)
+
+pray_tab <- pray_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+pray_tab$Range[pray_tab$Range == "Inf--Inf"] <- "-"
+
+colnames(pray_tab)[1] <- "Country"
+
+pray_tab$Country <- trim(pray_tab$Country)
+pray_tab <- pray_tab[order(pray_tab$Country), ] 
+
+kable(pray_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Identification as a religious person
+
+Question wording: "Independently of whether you attend religious services or not, would you say you are:"
+
+WVS name: Q173 in WVS 7 and V147 in WVS 6
+
+Code name: person
+
+The variable is the recoded (binary) version of the original variable. Thus, the “non-religious” and “atheist” response options are collapsed into the a single  “not religious” category so that the variable differentiates between religious and non-religious respondents. Moreover, the response options are reversed so that higher scores correspond to identification as a religious person.  
+
+Final coding: 1 = Not religious person; 2 = A religious person
+
+```{r person, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+person_tab <- rel_data %>%
+  group_by(country) %>%
+  count(person) %>%
+  spread(person, n)
+
+colnames(person_tab)[4] <- "Missing"
+
+person_tab$N <- rowSums(person_tab[, 2:4], na.rm = T)
+
+person_tab$Missing <- round(
+  person_tab$Missing/rowSums(person_tab[, 2:4], na.rm = T)*100, 1)
+
+person_tab <- person_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(person_tab)[1] <- "Country"
+
+person_tab$Country <- trim(person_tab$Country)
+person_tab <- person_tab[order(person_tab$Country), ] 
+
+kable(person_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+
+# Other variables
+
+These variables were used only to impute the missing values of the main variables
+
+## Importance of God
+
+Question wording: "How important is God in your life?"
+
+WVS name: Q164 in WVS 7 and V152 in WVS 6
+
+Code name: impgod
+
+This is the original version of the variable.
+
+Coding: 1 = Not at all important; 2 = 2; 3 = 3; 4 = 4; 5 = 5; 6 = 6; 7 = 7; 8 = 8; 9 = 9; 10 = Very important
+
+```{r impgod, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+impgod_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(impgod, na.rm = T), 2), 
+            SD = round(sd(impgod, na.rm = T), 2),
+            Range = paste(min(impgod, na.rm = T), max(impgod, na.rm = T), sep = "-"),
+            Missing = sum(is.na(impgod)),
+            N = length(impgod))
+
+impgod_tab$Missing[impgod_tab$Missing == 0] <- NA
+impgod_tab$Missing <- round(impgod_tab$Missing/impgod_tab$N*100, 1)
+
+impgod_tab <- impgod_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+impgod_tab$Range[impgod_tab$Range == "Inf--Inf"] <- "-"
+
+colnames(impgod_tab)[1] <- "Country"
+
+impgod_tab$Country <- trim(impgod_tab$Country)
+impgod_tab <- impgod_tab[order(impgod_tab$Country), ] 
+
+kable(impgod_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Membership in an organisation
+
+Question wording: "For each organization, could you tell me whether you are….? Church or religious organization"
+
+WVS name: Q94 in WVS 7 and V25 in WVS 6
+
+Code name: member
+
+This is the original version of the variable.
+
+Coding: 1 = Do not belong (Not a member in WVS 6); 2 = Inactive member; 3 = Active member
+
+```{r member, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+member_tab <- rel_data %>%
+  group_by(country) %>%
+  count(member) %>%
+  spread(member, n)
+
+colnames(member_tab)[5] <- "Missing"
+
+# make the columns with N observations
+member_tab$N <- rowSums(member_tab[, 2:5], na.rm = T)
+
+# make the missings in percent
+member_tab$Missing <- round(
+  member_tab$Missing/rowSums(member_tab[, 2:4], na.rm = T)*100, 1)
+
+member_tab <- member_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(member_tab)[1] <- "Country"
+
+member_tab$Country <- trim(member_tab$Country)
+member_tab <- member_tab[order(member_tab$Country), ] 
+
+kable(member_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Belief in God
+
+Question wording: "Which, if any, of the following do you believe in? God?" in WVS 7 and "Do you believe in God?" in WVS 6
+
+WVS name: Q165 in WVS 7 and V148 in WVS 6
+
+Code name: bgod
+
+The variable is the reversed coded version of the original variable so that it corresponds to non-belief and belief in God. 
+
+Final coding: 1 = No; 2 = Yes
+
+```{r bgod, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+bgod_tab <- rel_data %>%
+  group_by(country) %>%
+  count(bgod) %>%
+  spread(bgod, n)
+
+colnames(bgod_tab)[4] <- "Missing"
+
+bgod_tab$N <- rowSums(bgod_tab[, 2:4], na.rm = T)
+
+bgod_tab$Missing <- round(
+  bgod_tab$Missing/rowSums(bgod_tab[, 2:4], na.rm = T)*100, 1)
+
+bgod_tab <- bgod_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(bgod_tab)[1] <- "Country"
+
+bgod_tab$Country <- trim(bgod_tab$Country)
+bgod_tab <- bgod_tab[order(bgod_tab$Country), ] 
+
+kable(bgod_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Belief in hell
+
+Question wording: "Which, if any, of the following do you believe in? Hell?" in WVS 7 and "Do you believe in hell?" in WVS 6
+
+WVS name: Q167 in WVS 7 and V149 in WVS 6
+
+Code name: bhell
+
+The variable is the reversed coded version of the original variable so that it corresponds to non-belief and belief in hell 
+
+Final coding: 1 = No; 2 = Yes
+
+```{r bhell, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+bhell_tab <- rel_data %>%
+  group_by(country) %>%
+  count(bhell) %>%
+  spread(bhell, n)
+
+colnames(bhell_tab)[4] <- "Missing"
+
+bhell_tab$N <- rowSums(bhell_tab[, 2:4], na.rm = T)
+
+bhell_tab$Missing <- round(
+  bhell_tab$Missing/rowSums(bhell_tab[, 2:4], na.rm = T)*100, 1)
+
+bhell_tab <- bhell_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(bhell_tab)[1] <- "Country"
+
+bhell_tab$Country <- trim(bhell_tab$Country)
+bhell_tab <- bhell_tab[order(bhell_tab$Country), ] 
+
+kable(bhell_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Age
+
+Question wording: "You are ____ years old"
+
+WVS name: Q262 in WVS 7 and V242 in WVS 6
+
+Code name: age
+
+This is the original version of the variable.
+
+```{r age, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+age_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(age, na.rm = T), 2), 
+            SD = round(sd(age, na.rm = T), 2),
+            Range = paste(min(age, na.rm = T), max(age, na.rm = T), sep = "-"),
+            Missing = sum(is.na(age)),
+            N = length(age))
+
+age_tab$Missing[age_tab$Missing == 0] <- NA
+age_tab$Missing <- round(age_tab$Missing/age_tab$N*100, 1)
+
+age_tab <- age_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+age_tab$Range[age_tab$Range == "Inf--Inf"] <- "-"
+
+colnames(age_tab)[1] <- "Country"
+
+age_tab$Country <- trim(age_tab$Country)
+age_tab <- age_tab[order(age_tab$Country), ] 
+
+kable(age_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Gender
+
+Question wording: "Gender"
+
+WVS name: Q260 in WVS 7 and V240 in WVS 6
+
+Code name: gender
+
+This is the original version of the variable.
+
+```{r gender, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+gender_tab <- rel_data %>%
+  group_by(country) %>%
+  count(gender) %>%
+  spread(gender, n)
+
+colnames(gender_tab)[4] <- "Missing"
+
+gender_tab$N <- rowSums(gender_tab[, 2:4], na.rm = T)
+
+gender_tab$Missing <- round(
+  gender_tab$Missing/rowSums(gender_tab[, 2:4], na.rm = T)*100, 1)
+
+gender_tab <- gender_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+
+colnames(gender_tab)[1] <- "Country"
+
+gender_tab$Country <- trim(gender_tab$Country)
+gender_tab <- gender_tab[order(gender_tab$Country), ] 
+
+kable(gender_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lcccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+## Education
+
+Question wording: "What is the highest educational level that you have attained?"
+
+WVS name: Q275 in WVS 7 and V248 in WVS 6
+
+Code name: education
+
+The variable is the reversed coded version of the original variable so that the different response options in the two survey waves are harmonized. 
+
+In the WVS 6, the "No formal education" and "Incomplete primary school"  response options are collapsed into a single "Early childhood education (ISCED 0) / no education" category; the "Incomplete secondary school: technical/ vocational type" and "Incomplete secondary school: university-preparatory type" response options are collapsed into a single "Lower secondary education (ISCED 2)" category; the "Complete secondary school: technical/ vocational type", "Complete secondary school: university-preparatory type", and "Some university-level education, without degree" response options are collapsed into a single "Upper secondary / short tertiary education" category. Moreover, the "Complete primary school" category is recoded into the "Primary education (ISCED 1)" category. 
+
+In the WVS 7, the "Upper secondary education (ISCED 3)", "Post-secondary non-tertiary education (ISCED 4)", and "Short-cycle tertiary education (ISCED 5)"
+response options are collapsed into a single "Upper secondary / short tertiary education" category; the "Bachelor or equivalent (ISCED 6)", "Master or equivalent (ISCED 7)", and "Doctoral or equivalent (ISCED 8)" response options are collapsed into a single "University - level education, with degree" category.
+
+Higher scores correspond to higher level of education. 
+
+Final coding: 1 = Early childhood education (ISCED 0) / no education; 2 = Primary education (ISCED 1); 3 = Lower secondary education (ISCED 2); 4 = Upper secondary / short tertiary education; 5 = University - level education, with degree
+
+```{r education, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+educ_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(education, na.rm = T), 2), 
+            SD = round(sd(education, na.rm = T), 2),
+            Range = paste(min(education, na.rm = T), max(education, na.rm = T), sep = "-"),
+            Missing =sum(is.na(education)),
+            N = length(education))
+
+educ_tab$Missing[educ_tab$Missing == 0] <- NA
+educ_tab$Missing <- round(educ_tab$Missing/educ_tab$N*100, 1)
+
+educ_tab <- educ_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+educ_tab$Range[educ_tab$Range == "Inf--Inf"] <- "-"
+
+colnames(educ_tab)[1] <- "Country"
+
+educ_tab$Country <- trim(educ_tab$Country)
+educ_tab <- educ_tab[order(educ_tab$Country), ] 
+
+kable(educ_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
+
+## Income
+
+Question wording: "On this card is an income scale on which 1 indicates the lowest income group and 10 the highest income group in your country. We would like to know in what group your household is."
+
+WVS name: Q288 in WVS 7 and V239 in WVS 6
+
+Code name: income
+
+This is the original version of the variable.
+
+Coding: 1 = Lower step; 2 = Second step (second in the fifth WVS 7 release); 3 = Third step; 4 = Fourth step; 5 = Fifth step; 6 = Sixth step; 7 = Seventh step; 8 = Eight (Eigth in WVS 6) step; 9 = Nineth step; 10 = Tenth step
+
+```{r income, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+income_tab <- rel_data %>%
+  group_by(country) %>%
+  summarise(Mean = round(mean(income, na.rm = T), 2), 
+            SD = round(sd(income, na.rm = T), 2),
+            Range = paste(min(income, na.rm = T), max(income, na.rm = T), sep = "-"),
+            Missing = sum(is.na(income)),
+            N = length(income))
+
+income_tab$Missing[income_tab$Missing == 0] <- NA
+income_tab$Missing <- round(income_tab$Missing/income_tab$N*100, 1)
+
+income_tab <- income_tab %>%
+  mutate_if(is.numeric , replace_na, replace = "-")
+income_tab$Range[income_tab$Range == "Inf--Inf"] <- "-"
+
+colnames(income_tab)[1] <- "Country"
+
+income_tab$Country <- trim(income_tab$Country)
+income_tab <- income_tab[order(income_tab$Country), ] 
+
+kable(income_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "lccccc") %>%
+  kable_styling(latex_options = c("striped", "repeat_header"), full_width = T) %>%
+  footnote(
+    general = "SD = Standard deviation; Missing = Missing values, in %; N = Number of observations; - = No data"
+  )
+```
+
