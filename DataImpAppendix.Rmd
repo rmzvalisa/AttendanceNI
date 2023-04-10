@@ -1,0 +1,295 @@
+---
+title: "Data Appendix: Imputed Data"
+author: "Remizova Alisa"
+output: pdf_document
+---
+
+This is a description of the individual-level data employed in the analysis. The dataset is the combined World Values Survey (WVS) 6 and WVS 7 data. Each row is individual observation (respondent).
+
+There are the following changes compared to the original WVS data:
+
+1. The missing data are imputed with *mice* R package.
+2. The response options of all indicators are reversed so that higher scores correspond to higher religiosity.
+3. For the identification as a religious person item, the "non-religious" and "atheist" response options are collapsed into a single category "not religious" category so that the variable differentiates between religious and non-religious respondents.
+4. The belonging to a denomination indicator is recoded into a binary variable corresponding to affiliation and non-affiliation with a denomination.
+
+There are five separate imputed datasets, so the document is divided into sections corresponding to variables, and each of them has specific statistics for each dataset. The descriptive statistics are presented by country (N = 65). 
+
+There are more variables in the input dataset than those used in the analysis. Below is the description of the later variables; the former were employed only in the data preparation step. For the share of missing values for each variable (by country) before imputation, see Table 7 in the paper's Appendix. 
+
+Please execute the data preparation script in the "01_ProcessingScripts" folder before you run the current script, or import the imputed data from the "02_AnalysisData" folder.
+
+# Importance of religion
+
+Question wording: "For each of the following, indicate how important it is in your life - Religion"
+
+WVS name: Q6 in WVS 7 and V9 in WVS 6
+
+Code name: imprel
+
+The variable is the reversed coded version of the original variable so that higher scores corresponded to higher importance of religion. Moreover, the variable has imputed missing observations. 
+
+Final coding: 1 = Not at all important; 2 = Not very important; 3 = Rather important; 4 = Very important
+
+```{r imprel, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+# Please run all the Processing Script before you run the Data Appendix Script
+## or upload the imputed data from the “02_AnalysisScripts” folder
+
+library(kableExtra)
+load("./02_Data/02_AnalysisData/imp_data_final.RData")
+
+imprel_tab <- imp_data
+
+for (i in 1:length(imprel_tab)){
+  
+  # frequency table for each of the five imputed datasets
+  imprel_tab[[i]] <- lapply(imprel_tab[[i]], function(x)
+    table(x$imprel))
+  
+  imprel_tab[[i]] <- as.data.frame(do.call("rbind", imprel_tab[[i]]))
+  
+  imprel_tab[[i]] <- cbind(
+    c(names(imprel_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    imprel_tab[[i]])
+  
+  colnames(imprel_tab[[i]]) <- c("Country", "Dataset", 1:4)
+  
+  imprel_tab[[i]]$N <- rowSums(imprel_tab[[i]][, 3:6])
+
+}
+
+# Combine into one table
+imprel_tab <- do.call("rbind", imprel_tab)
+
+kable(imprel_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llccccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
+# Confidence in institutions
+
+Question wording: "I am going to name a number of organizations. For each one, could you tell me how much confidence you have in them? The Churches"
+
+WVS name: Q64 in WVS 7 and V108 in WVS 6
+
+Code name: confidence
+
+The variable is the reversed coded version of the original variable so that higher scores corresponded to higher confidence in institutions. Moreover, the variable has imputed missing observations. 
+
+Final coding: 1 = None at all important; 2 = Not very much; 3 = Quite a lot; 4 = A great deal
+
+```{r confidence, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+conf_tab <- imp_data
+
+for (i in 1:length(conf_tab)){
+  
+  # frequency table for each of the five imputed datasets
+  conf_tab[[i]] <- lapply(conf_tab[[i]], function(x)
+    table(x$confidence))
+  
+  conf_tab[[i]] <- as.data.frame(do.call("rbind", conf_tab[[i]]))
+  
+  conf_tab[[i]] <- cbind(
+    c(names(conf_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    conf_tab[[i]])
+  
+  colnames(conf_tab[[i]]) <- c("Country", "Dataset", 1:4)
+  
+  conf_tab[[i]]$N <- rowSums(conf_tab[[i]][, 3:6])
+
+}
+
+conf_tab <- do.call("rbind", conf_tab)
+
+kable(imprel_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llccccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
+# Belonging to a denomination
+
+Question wording: "Do you belong to a religion or religious denomination? If yes, which one?"
+
+WVS name: Q289 in WVS 7 and V144 in WVS 6
+
+Code name: belong
+
+The variable is the recoded (binary) version of the original variable so that it corresponds to affiliation and non-affiliation with a denomination. Moreover, the variable has imputed missing observations.
+
+Final coding: 1 = No, do not belong to a denomination; 2 = Yes, belong to a denomination
+
+```{r belong, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+belong_tab <- imp_data
+
+for (i in 1:length(belong_tab)){
+  
+  # frequency table for each of the five imputed datasets
+  belong_tab[[i]] <- lapply(belong_tab[[i]], function(x)
+    table(x$belong))
+  
+  belong_tab[[i]] <- as.data.frame(do.call("rbind", belong_tab[[i]]))
+  
+  belong_tab[[i]] <- cbind(
+    c(names(belong_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    belong_tab[[i]])
+  
+  colnames(belong_tab[[i]]) <- c("Country", "Dataset", 1:2)
+  
+  belong_tab[[i]]$N <- rowSums(belong_tab[[i]][, 3:4])
+  
+}
+
+
+belong_tab <- do.call("rbind", belong_tab)
+
+kable(belong_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
+
+# Frequency of religious attendance
+
+Question wording: "Apart from weddings and funerals, about how often do you attend religious services these days?"
+
+WVS name: Q171 in WVS 7 and V145 in WVS 6
+
+Code name: attend
+
+The variable is the reversed coded version of the original variable so that higher scores corresponded to higher frequency of religious attendance. Moreover, the variable has imputed missing observations. 
+
+Final coding: 1 = Never, practically; 2 = Less often; 3 = Once a year; 4 = Only on special holy days; 5 = Once a month; 6 = Once a week; 7 = More than once a week
+
+
+
+```{r attend, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+attend_tab <- imp_data
+
+for (i in 1:length(attend_tab)){
+  
+  # descriptive statistics for each of the five imputed datasets
+  for (a in 1:length(attend_tab[[i]])){
+    attend_tab[[i]][[a]]$Mean = round(mean(attend_tab[[i]][[a]]$attend, na.rm = T), 2)
+    attend_tab[[i]][[a]]$SD = round(sd(attend_tab[[i]][[a]]$attend, na.rm = T), 2)
+    attend_tab[[i]][[a]]$Range = paste(min(attend_tab[[i]][[a]]$attend, na.rm = T), max(attend_tab[[i]][[a]]$attend, na.rm = T), sep = "-")
+    attend_tab[[i]][[a]]$N = length(attend_tab[[i]][[a]]$attend)
+    
+    attend_tab[[i]][[a]] <- attend_tab[[i]][[a]][1, c("Mean", "SD", "Range", "N")]
+    
+  }
+  
+  # Combine for countries into one table
+  attend_tab[[i]] <- as.data.frame(do.call("rbind", attend_tab[[i]]))
+  
+  attend_tab[[i]] <- cbind(
+    c(names(attend_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    attend_tab[[i]])
+ 
+  colnames(attend_tab[[i]]) <- 
+    c("Country", "Dataset", "Mean", "SD", "Range", "N")
+}
+
+# Combine into one table
+attend_tab <- do.call("rbind", attend_tab)
+
+kable(attend_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llcccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
+# Frequency of praying
+
+Question wording: "Apart from weddings and funerals, about how often do you pray?"
+
+WVS name: Q172 in WVS 7 and V146 in WVS 6
+
+Code name: pray
+
+The variable is the reversed coded version of the original variable so that higher scores corresponded to higher frequency of praying. Moreover, the variable has imputed missing observations. 
+
+Final coding: 1 = Never, practically never; 2 = Less often; 3 = Once a year; 4 = Only on special holy days; 5 = Only when attending religious services; 6 = Several times each week; 7 = Once a day; 8 = Several times a day
+
+```{r pray, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+pray_tab <- imp_data
+
+for (i in 1:length(pray_tab)){
+  
+  for (a in 1:length(pray_tab[[i]])){
+    pray_tab[[i]][[a]]$Mean = round(mean(pray_tab[[i]][[a]]$pray, na.rm = T), 2)
+    pray_tab[[i]][[a]]$SD = round(sd(pray_tab[[i]][[a]]$pray, na.rm = T), 2)
+    pray_tab[[i]][[a]]$Range = paste(min(pray_tab[[i]][[a]]$pray, na.rm = T), max(pray_tab[[i]][[a]]$pray, na.rm = T), sep = "-")
+    pray_tab[[i]][[a]]$N = length(pray_tab[[i]][[a]]$pray)
+    
+    pray_tab[[i]][[a]] <- pray_tab[[i]][[a]][1, c("Mean", "SD", "Range", "N")]
+    
+  }
+  
+  pray_tab[[i]] <- as.data.frame(do.call("rbind", pray_tab[[i]]))
+  
+  pray_tab[[i]] <- cbind(
+    c(names(pray_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    pray_tab[[i]])
+ 
+  colnames(pray_tab[[i]]) <- 
+    c("Country", "Dataset", "Mean", "SD", "Range", "N")
+}
+
+pray_tab <- do.call("rbind", pray_tab)
+
+kable(pray_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llcccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
+# Identification as a religious person
+
+Question wording: "Independently of whether you attend religious services or not, would you say you are:"
+
+WVS name: Q173 in WVS 7 and V147 in WVS 6
+
+Code name: person
+
+The variable is the recoded (binary) version of the original variable: the “non-religious” and “atheist” response options were collapsed into the a single category “not religious” category so that the variable differentiated between religious and non-religious respondents. Moreover, the variable has imputed missing observations.
+
+Final coding: 1 = Not religious person; 2 = A religious person
+
+```{r person, echo = FALSE, message = FALSE, warning = FALSE, results = "asis"}
+person_tab <- imp_data
+
+for (i in 1:length(person_tab)){
+  
+  # frequency table for each of the five imputed datasets
+  person_tab[[i]] <- lapply(person_tab[[i]], function(x)
+    table(x$person))
+  
+  person_tab[[i]] <- as.data.frame(do.call("rbind", person_tab[[i]]))
+  
+  person_tab[[i]] <- cbind(
+    c(names(person_tab[i]), "", "", "", ""),
+    c("Data 1", "Data 2", "Data 3", "Data 4", "Data 5"), 
+    person_tab[[i]])
+  
+  colnames(person_tab[[i]]) <- c("Country", "Dataset", 1:2)
+  
+  person_tab[[i]]$N <- rowSums(person_tab[[i]][, 3:4])
+
+}
+
+person_tab <- do.call("rbind", person_tab)
+
+kable(person_tab, "latex", booktabs = T, longtable = T, row.names = F,
+      align = "llccc") %>%
+  kable_styling(latex_options = "striped", full_width = T)
+
+```
+
